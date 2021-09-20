@@ -88,9 +88,20 @@ services:
     networks:
       - opensearch-net
   middleware-api:
+    container_name: middleware-api
     build:
       context: .
-      dockerfile: Dockerfile    
+      dockerfile: Dockerfile
+    ports:
+      - 80:80 
+    environment: 
+      opensearch_username: ${opensearch_username}
+      opensearch_password: ${opensearch_password}
+      ca_path: ${ca_path}
+    volumes: 
+      - ./certs/gen/root-ca.pem:${ca_path}  
+    networks:
+      - opensearch-net  
 volumes:
   opensearch-data1:
   opensearch-data2:
