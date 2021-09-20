@@ -1,3 +1,5 @@
+plugins.security.allow_unsafe_democertificates: true
+
 plugins.security.ssl.transport.pemcert_filepath: node.pem
 plugins.security.ssl.transport.pemkey_filepath: node-key.pem
 plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
@@ -11,10 +13,11 @@ plugins.security.authcz.admin_dn:
   - 'CN=admin,OU=RD,O=LIS,L=Taichung,ST=Taiwan,C=TW'
 plugins.security.nodes_dn:
   - 'CN=elasticsearch,OU=RD,O=LIS,L=Taichung,ST=Taiwan,C=TW'
+
 plugins.security.audit.type: internal_opensearch
 plugins.security.enable_snapshot_restore_privilege: true
 plugins.security.check_snapshot_restore_write_privileges: true
 plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
 cluster.routing.allocation.disk.threshold_enabled: false
-plugins.security.audit.config.disabled_rest_categories: NONE
-plugins.security.audit.config.disabled_transport_categories: NONE
+# plugins.security.audit.config.disabled_rest_categories: NONE
+# plugins.security.audit.config.disabled_transport_categories: NONE

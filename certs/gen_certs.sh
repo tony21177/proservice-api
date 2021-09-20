@@ -10,7 +10,7 @@ rm -rf $GEN_DIR/*
 CERT_DAYS=3650
 CA_CNF=$CNF_DIR/root.cnf
 CA_KEY=$GEN_DIR/root.key
-CA_CRT=$GEN_DIR/root.crt
+CA_CRT=$GEN_DIR/root-ca.pem
 
 GEN_CA (){
     # root CA
@@ -26,8 +26,8 @@ GEN_CERTS () {
             CNF=$cnf
             KEY=$GEN_DIR/$NAME.key
             CSR=$GEN_DIR/$NAME.csr
-            CRT=$GEN_DIR/$NAME.crt
-            PKCS8=$GEN_DIR/$NAME.pkcs8.key
+            CRT=$GEN_DIR/$NAME.pem
+            PKCS8=$GEN_DIR/$NAME-key.pem
             openssl genrsa -out $KEY 4096
             openssl req -new -key $KEY -out $CSR -config $CNF
             openssl x509 -req -in $CSR -out $CRT -CA $CA_CRT -CAkey $CA_KEY -CAcreateserial -days $CERT_DAYS -extfile $CNF -extensions v3_req
