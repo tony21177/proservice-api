@@ -1,0 +1,25 @@
+[req]
+prompt = no
+encrypt_key = no
+default_md = sha256
+default_bits = 4096
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = TW
+ST = Taiwan
+L = Taichung
+O = LIS
+OU = RD
+emailAddress = kunnan_lin@shotouch.com
+CN = Neithnet Ingress
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+IP.1 = 127.0.0.1
+DNS.1 = localhost
+DNS.2 = nginx
+

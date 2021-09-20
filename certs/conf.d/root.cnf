@@ -1,0 +1,22 @@
+[req]
+prompt = no
+encrypt_key = no
+default_md = sha256
+default_bits = 4096
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = TW
+ST = Taiwan
+L = Taichung
+O = LIS
+OU = RD
+emailAddress = kunnan_lin@shotouch.com
+CN = self_ca
+
+[v3_req]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true, pathlen:0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign

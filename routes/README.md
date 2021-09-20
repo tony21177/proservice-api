@@ -1,0 +1,1 @@
+## export GOOGLE_APPLICATION_CREDENTIALS="/home/${USER}/service-account-file.json"
