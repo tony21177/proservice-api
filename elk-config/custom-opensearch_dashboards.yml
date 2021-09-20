@@ -14,10 +14,14 @@
 # Description:
 # Default configuration for OpenSearch Dashboards
 
+server.host: "0.0.0.0"
+server.port: 443
+server.name: "LIS-dashboard"
+
 opensearch.hosts: ["https://localhost:9200"]
 opensearch.ssl.verificationMode: none
-opensearch.username: "kibanaserver"
-opensearch.password: "kibanaserver"
+opensearch.username: "admin"
+opensearch.password: "lis123"
 opensearch.requestHeadersWhitelist: [ authorization,securitytenant ]
 
 opensearch_security.multitenancy.enabled: true
