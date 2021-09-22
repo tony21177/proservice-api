@@ -23,7 +23,10 @@ exports.saveEvent = async (req, res, next) => {
 }
 
 exports.scrollEvents = async(req,res,next) => {
-    const data = await scrollEvents(null,null,null)
+    const from = req.body.from;
+    const size = req.body.size;
+    const scrollId = req.body.scrollId;
+    const data = await scrollEvents(from,size,scrollId)
     res.status(200).json({
         status: 200,
         success: true,
