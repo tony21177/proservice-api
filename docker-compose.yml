@@ -111,6 +111,8 @@ networks:
 
 
 
+<iframe src="https://34.80.62.198/app/dashboards?security_tenant=global#/view/8e9105d0-1ae3-11ec-b67c-65324aadda11?embed=true&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now%2Fd,to:now%2Fd))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(hidePanelTitles:!f,useMargins:!t),query:(language:kuery,query:''),timeRestore:!f,title:dashboard,viewMode:view)" height="600" width="800"></iframe>
+
 
 
 

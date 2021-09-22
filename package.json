@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=admin opensearch_password=lis123 NODE_ENV=production node ./bin/www",
-    "debug": "NODE_ENV=production node --inspect ./bin/www",
+    "debug": "NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=admin opensearch_password=lis123 NODE_ENV=production node --inspect ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

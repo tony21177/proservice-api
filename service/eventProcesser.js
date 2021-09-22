@@ -1,4 +1,4 @@
-const {insertEventLog} = require('../datastore/elasticsearch/event')
+const {insertEventLog,scrollEvents} = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
@@ -19,5 +19,14 @@ exports.saveEvent = async (req, res, next) => {
         status: 200,
         success: true,
         data: null
+    })
+}
+
+exports.scrollEvents = async(req,res,next) => {
+    const data = await scrollEvents(null,null,null)
+    res.status(200).json({
+        status: 200,
+        success: true,
+        data: data
     })
 }

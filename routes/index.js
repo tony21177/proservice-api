@@ -4,8 +4,10 @@ const eventProcesser = require('../service/eventProcesser')
 
 
 
-// restful api for mqt
+// restful api for mqtt
 router.post("/api/v1/event",eventProcesser.saveEvent);
+// restful api for scroll events list
+router.post("/api/v1/event/list",eventProcesser.scrollEvents)
 
 
 
