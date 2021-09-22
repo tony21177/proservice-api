@@ -33,7 +33,9 @@ const scrollEvents = async (from,size,scrollId) => {
         maxRetries: 2
       })
       if(result.body.hits.hits.length==0){
-        return getEmptyResult();
+        result = getEmptyResult();
+        result.total = result.body.hits.total.value
+        return result;
       }
       result=result = parseEsResult(result)
     }else{
@@ -47,7 +49,9 @@ const scrollEvents = async (from,size,scrollId) => {
         rest_total_hits_as_int: true,
       })
       if(result.body.hits.hits.length==0){
-        return getEmptyResult();
+        result = getEmptyResult();
+        result.total = result.body.hits.total.value
+        return result;
       }
       result = parseEsResult(result)
     }
@@ -63,5 +67,5 @@ const parseEsResult = result=>{
 }
 
 const getEmptyResult = ()=>{
-    return {scrollId:'0',events:[],total:0}
+    return {scrollId:'0',events:[]}
 }
