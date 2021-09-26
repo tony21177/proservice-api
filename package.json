@@ -21,6 +21,7 @@
     "node-pg-migrate": "^5.10.0",
     "nodemon": "^2.0.12",
     "pg": "^8.7.1",
-    "pg-format": "^1.0.4"
+    "pg-format": "^1.0.4",
+    "xml2js": "^0.4.23"
   }
 }
