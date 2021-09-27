@@ -1,5 +1,6 @@
 const { esClient } = require('./esclient')
 const util = require('util');
+const { config } = require('../../config/env')
 
 const insertEventLog = async (month,day,data) =>{
     const response = await esClient.index({
@@ -48,6 +49,7 @@ const scrollEvents = async (from,size,scrollId) => {
         rest_total_hits_as_int: true,
       })
       if(result.body.hits.hits.length==0){
+        clearScroll(scrollId)
         result = getEmptyResult();
         return result;
       }
@@ -66,4 +68,22 @@ const parseEsResult = result=>{
 
 const getEmptyResult = ()=>{
     return {scrollId:'0',events:[]}
+}
+
+const clearScroll = async(scrollId)=>{
+  const axios = require('axios')
+
+  axios.delete(config.esHost+'/_search/scroll', {
+      data: {"scroll_id" : [scrollId]},
+      auth: {
+          username: config.esUsername,
+          password: config.esPassword
+      }
+    })
+  .then(res => {
+      console.log(`statusCode: ${res.status}`)
+  })
+  .catch(error => {
+      console.error(error)
+  })
 }
