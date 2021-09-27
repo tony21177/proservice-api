@@ -3,6 +3,7 @@ const { config } = require('../../config/env')
 
 console.log('username:',config.esUsername)
 console.log('password:',config.esPassword)
+console.log('node:',config.esHost)
 const client = new Client({
   node: config.esHost,
   auth: {
