@@ -12,4 +12,4 @@ RUN npm install
 COPY . .
 EXPOSE 80
 
-ENTRYPOINT NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=${opensearch_username} opensearch_password=${opensearch_password} ca_path=${ca_path} NODE_ENV=production node ./bin/www
+ENTRYPOINT esHost=${esHost}  NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=${opensearch_username} opensearch_password=${opensearch_password} ca_path=${ca_path} NODE_ENV=production node ./bin/www
