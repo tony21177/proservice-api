@@ -69,7 +69,23 @@ exports.scrollEvents = async(req,res,next) => {
     const from = req.body.from;
     const size = req.body.size;
     const scrollId = req.body.scrollId;
-    const data = await scrollEvents(from,size,scrollId)
+    try {
+        const data = await scrollEvents(from,size,scrollId)
+    }catch (error) {
+        console.log(`scrollEvents error: ${error}`);
+        if(error instanceof CustomExceptionError){
+            res.status(400).json({
+                status: 400,
+                success: false,
+                data: "scroll to end already..."
+            })
+        }
+        res.status(500).json({
+            status: 500,
+            success: false,
+            data: error
+        })
+    }
     res.status(200).json({
         status: 200,
         success: true,
