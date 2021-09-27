@@ -5,5 +5,5 @@ exports.config = {
     esUsername : process.env['opensearch_username'],
     esPassword : process.env['opensearch_password'],
     ca_path : process.env['ca_path'],
-    esHost: process.env['esHost']
+    es_host: process.env['es_host']
 }

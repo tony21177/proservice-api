@@ -11,6 +11,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 EXPOSE 80
-RUN echo ${esHost}
+RUN echo ${es_host}
 
-ENTRYPOINT esHost=${esHost} NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=${opensearch_username} opensearch_password=${opensearch_password} ca_path=${ca_path} NODE_ENV=production node ./bin/www
+ENTRYPOINT es_host=${es_host} NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=${opensearch_username} opensearch_password=${opensearch_password} ca_path=${ca_path} NODE_ENV=production node ./bin/www

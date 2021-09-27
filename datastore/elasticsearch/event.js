@@ -73,7 +73,7 @@ const getEmptyResult = ()=>{
 const clearScroll = async(scrollId)=>{
   const axios = require('axios')
 
-  axios.delete(config.esHost+'/_search/scroll', {
+  axios.delete(config.es_host+'/_search/scroll', {
       data: {"scroll_id" : [scrollId]},
       auth: {
           username: config.esUsername,
