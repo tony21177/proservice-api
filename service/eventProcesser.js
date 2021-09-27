@@ -69,8 +69,9 @@ exports.scrollEvents = async(req,res,next) => {
     const from = req.body.from;
     const size = req.body.size;
     const scrollId = req.body.scrollId;
+    let data;
     try {
-        const data = await scrollEvents(from,size,scrollId)
+        data = await scrollEvents(from,size,scrollId)
     }catch (error) {
         console.log(`scrollEvents error: ${error}`);
         if(error instanceof CustomExceptionError){
