@@ -73,19 +73,20 @@ exports.scrollEvents = async(req,res,next) => {
     try {
         data = await scrollEvents(from,size,scrollId)
     }catch (error) {
-        console.log(`scrollEvents error: ${error}`);
-        if(error instanceof CustomExceptionError){
+        if(error.meta.body.error.root_cause[0]&&error.meta.body.error.root_cause[0].type=='search_context_missing_exception'){
             res.status(400).json({
                 status: 400,
                 success: false,
                 data: "scroll to end already..."
             })
+            return
         }
         res.status(500).json({
             status: 500,
             success: false,
             data: error
         })
+        return
     }
     res.status(200).json({
         status: 200,
