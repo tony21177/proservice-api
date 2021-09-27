@@ -98,6 +98,7 @@ services:
       opensearch_username: ${opensearch_username}
       opensearch_password: ${opensearch_password}
       ca_path: ${ca_path}
+      es_host: ${es_host}
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
     networks:
