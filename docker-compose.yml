@@ -102,9 +102,52 @@ services:
       - ./certs/gen/root-ca.pem:${ca_path}  
     networks:
       - opensearch-net  
+  # How to Tune Elastic Beats Performance: A Practical Example with Batch Size, Worker Count, and More
+  # https://www.elastic.co/blog/how-to-tune-elastic-beats-performance-a-practical-example-with-batch-size-worker-count-and-more?blade=tw&hulk=social
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.15.0
+    # https://github.com/docker/swarmkit/issues/1951
+    hostname: "{{.Node.Hostname}}-filebeat"
+    # Need to override user so we can access the log files, and docker.sock
+    user: root
+    networks:
+      - opensearch-net 
+    configs:
+      - source: fb_config
+        target: /usr/share/filebeat/filebeat.yml
+    volumes:
+      - filebeat:/usr/share/filebeat/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      # This is needed for filebeat to load container log path as specified in filebeat.yml
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+
+      # # This is needed for filebeat to load jenkins build log path as specified in filebeat.yml
+      # - /var/lib/docker/volumes/jenkins_home/_data/jobs/:/var/lib/docker/volumes/jenkins_home/_data/jobs/:ro
+
+      # This is needed for filebeat to load logs for system and auth modules
+      - /var/log/:/var/log/:ro
+      # This is needed for filebeat to load logs for auditd module. you might have to install audit system
+      # on ubuntu first (sudo apt-get install -y auditd audispd-plugins)
+      - /var/log/audit/:/var/log/audit/:ro
+    environment:
+      - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST:-opensearch-node1}
+      - KIBANA_HOST=${KIBANA_HOST:-opensearch-dashboards}
+      - ELASTICSEARCH_USERNAME=${opensearch_username}
+      - ELASTICSEARCH_PASSWORD=${opensearch_password}
+    # disable strict permission checks
+    command: ["--strict.perms=false"]
+    deploy:
+      mode: global
+
+
 volumes:
   opensearch-data1:
   opensearch-data2:
+  filebeat:
 
 networks:
   opensearch-net:
+
+configs:
+  fb_config:
+    file: $PWD/filebeat.yml  
