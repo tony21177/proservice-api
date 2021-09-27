@@ -35,20 +35,20 @@ filebeat.inputs:
     fields_under_root: true
     fields:
       event.module: filebeat-mqtt
-    processors:
-      field: ""
-      target_field: ""
-      overwrite_keys: true
+    # processors:
+    #   field: ""
+    #   target_field: ""
+    #   overwrite_keys: true
     keep_null: false
     index: 'mqtt-event-%{+yyyy-MM-dd}'
     pipeline: event-mqtt-pipeline
-setup.template.settings:
-  index.number_of_shards: 1
-  index.number_of_replicas: 0
-  index.codec: best_compression
+# setup.template.settings:
+#   index.number_of_shards: 1
+#   index.number_of_replicas: 0
+#   index.codec: best_compression
 output.elasticsearch:
   hosts:
-    - '127.0.0.1:9200'
+    - 'opensearch-node1:9200'
   protocol: http
   username: elastic
   password: changeme
