@@ -49,9 +49,9 @@ filebeat.inputs:
 output.elasticsearch:
   hosts:
     - 'opensearch-node1:9200'
-  protocol: http
-  username: elastic
-  password: changeme
+  protocol: https
+  username: admin
+  password: lis123
 
 
 
