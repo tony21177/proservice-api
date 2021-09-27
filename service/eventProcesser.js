@@ -38,7 +38,7 @@ exports.saveRawEvent = async(req, res, next)=>{
             data: ex
         })
     }
-    console.log("----xml raw data",xml)
+    console.log("xml raw data:",xml)
     xml2js.parseString(xml, async (err, result) => {
         if(err) {
             console.log("parse xml error:",err);
@@ -76,3 +76,4 @@ exports.scrollEvents = async(req,res,next) => {
         data: data
     })
 }
+
