@@ -13,6 +13,17 @@ const insertEventLog = async (month,day,data) =>{
 }
 exports.insertEventLog = insertEventLog
 
+const insertRawEventLog = async (month,day,data) =>{
+  const response = await esClient.index({
+      index: "raw_xml_"+"event_"+month+"_"+day,
+      op_type: 'create',
+      refresh: 'true' ,
+      body: data
+    })
+  return response  
+}
+exports.insertEventLog = insertRawEventLog
+
 const scrollEvents = async (from,size,scrollId) => {
     // first 
     let result = getEmptyResult();
@@ -25,7 +36,7 @@ const scrollEvents = async (from,size,scrollId) => {
       } 
       result = await esClient.search({
         index: 'event*',
-        sort: ['Timestamp:desc'],
+        sort: ['IAMessage.Detail.Info.TimeOfEvent:desc'],
         from: from,
         size: size,
         scroll:'10m',
