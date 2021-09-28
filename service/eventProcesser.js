@@ -39,7 +39,13 @@ exports.saveRawEvent = async(req, res, next)=>{
         })
     }
     console.log("xml raw data:",xml)
-    xml2js.parseString(xml, async (err, result) => {
+    const parseOption = {
+        explicitArray :false,
+        ignoreAttrs : false,
+        mergeAttrs :true,
+        attrNameProcessors:[function (name){return '@'+name}]
+    }
+    xml2js.parseString(xml, parseOption,async (err, result) => {
         if(err) {
             console.log("parse xml error:",err);
             res.status(500).json({

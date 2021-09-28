@@ -22,7 +22,7 @@ const insertRawEventLog = async (month,day,data) =>{
     })
   return response  
 }
-exports.insertEventLog = insertRawEventLog
+exports.insertRawEventLog = insertRawEventLog
 
 const scrollEvents = async (from,size,scrollId) => {
     // first 
