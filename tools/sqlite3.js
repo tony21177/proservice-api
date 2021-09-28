@@ -22,6 +22,7 @@ logDb.serialize(() => {
                 explicitArray: false,
                 ignoreAttrs: false,
                 mergeAttrs: true,
+                charkey: '#text',
                 attrNameProcessors: [function (name) { return '@' + name }]
             }
             xml2js.parseString(raw.replace("\ufeff", ""), parseOption, async (err, result) => {

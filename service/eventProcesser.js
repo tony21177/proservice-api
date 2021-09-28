@@ -43,6 +43,7 @@ exports.saveRawEvent = async(req, res, next)=>{
         explicitArray :false,
         ignoreAttrs : false,
         mergeAttrs :true,
+        charkey: '#text',
         attrNameProcessors:[function (name){return '@'+name}]
     }
     xml2js.parseString(xml, parseOption,async (err, result) => {
