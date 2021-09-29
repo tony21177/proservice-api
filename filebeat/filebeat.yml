@@ -41,7 +41,7 @@ filebeat.inputs:
     #   overwrite_keys: true
     keep_null: false
     index: 'mqtt-event-%{+yyyy-MM-dd}'
-    pipeline: event-mqtt-pipeline
+    #    pipeline: event-mqtt-pipeline
 # setup.template.settings:
 #   index.number_of_shards: 1
 #   index.number_of_replicas: 0
@@ -52,7 +52,7 @@ output.elasticsearch:
   protocol: https
   username: admin
   password: lis123
-
+  ssl.verification_mode: none
 
 
 #========================== Filebeat autodiscover ==============================

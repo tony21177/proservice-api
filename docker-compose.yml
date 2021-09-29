@@ -106,7 +106,7 @@ services:
   # How to Tune Elastic Beats Performance: A Practical Example with Batch Size, Worker Count, and More
   # https://www.elastic.co/blog/how-to-tune-elastic-beats-performance-a-practical-example-with-batch-size-worker-count-and-more?blade=tw&hulk=social
   filebeat:
-    image: docker.elastic.co/beats/filebeat:7.15.0
+    image: docker.elastic.co/beats/filebeat-oss:7.10.2
     # https://github.com/docker/swarmkit/issues/1951
     hostname: "{{.Node.Hostname}}-filebeat"
     # Need to override user so we can access the log files, and docker.sock
@@ -114,7 +114,9 @@ services:
     networks:
       - opensearch-net 
     volumes:
-      - $PWD/filebeat.yml:/usr/share/filebeat/filebeat.yml      
+      # for filebeat logs
+      - $PWD/filebeat/logs:/usr/share/filebeat/logs      
+      - $PWD/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml      
       - filebeat:/usr/share/filebeat/data
       - /var/run/docker.sock:/var/run/docker.sock
       # This is needed for filebeat to load container log path as specified in filebeat.yml
