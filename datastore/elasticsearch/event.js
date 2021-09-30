@@ -1,6 +1,7 @@
 const { esClient } = require('./esclient')
 const util = require('util');
-const { config } = require('../../config/env')
+const { config } = require('../../config/env');
+const { events } = require('@elastic/elasticsearch');
 
 const insertEventLog = async (month, day, data) => {
   const response = await esClient.index({
@@ -74,7 +75,7 @@ const parseEsResult = result => {
   const scrollId = result.body['_scroll_id']
   const total = result.body.hits.total.value
   const events = result.body.hits.hits.map(data => data['_source'])
-  parseVerboseForRVLow(events)
+  parseForVerbose(events)
   return { total: total, scrollId: scrollId, events: events }
 }
 
@@ -100,21 +101,50 @@ const clearScroll = async (scrollId) => {
     })
 }
 
-const parseVerboseForRVLow = events => {
+const parseForVerbose = events => {
   events.forEach(event => {
-    if (event['IAMessage']['Detail']['Info']['Terse'] == 'RV Supply is low') {
-      const verbose = event['IAMessage']['Detail']['Info']['Verbose']
-
-      const replacedVerbose = verbose.replace(/ /g, '').replace(/\t/g, '');
-      const parsedArray = replacedVerbose.split('\n')
-      const parsedVerbose = {};
-      parsedArray.forEach(pair => {
-        const key = pair.split(':')[0]
-        const value = pair.split(':')[1]
-        parsedVerbose[key] = value
-      })
-      event['IAMessage']['Detail']['Info']['parsedVerbose']=parsedVerbose
+    const Terse = event['IAMessage']['Detail']['Info']['Terse']
+    if (Terse == 'RV Supply is low' || Terse == 'Aspiration Monitor detected possible obstruction') {
+      parseVerboseForAllLine(event)
+    } else {
+      parseVerboseExcludeFirstLine(event)
     }
   })
+}
 
+const parseVerboseForAllLine = event => {
+
+  const verbose = event['IAMessage']['Detail']['Info']['Verbose']
+  const replacedVerbose = verbose.replace(/ /g, '').replace(/\t/g, '');
+  const parsedArray = replacedVerbose.split('\n')
+  const parsedVerbose = {};
+  parsedArray.forEach(pair => {
+    const key = pair.split(':')[0]
+    const value = pair.split(':')[1]
+    parsedVerbose[key] = value
+  })
+  event['IAMessage']['Detail']['Info']['verboseDescription'] = event['IAMessage']['Detail']['Info']['Terse']
+  event['IAMessage']['Detail']['Info']['parsedVerbose'] = parsedVerbose
+
+}
+
+const parseVerboseExcludeFirstLine = event => {
+
+  const verbose = event['IAMessage']['Detail']['Info']['Verbose']
+  const description = verbose.split(/\n(.+)/s)[0]
+  event['IAMessage']['Detail']['Info']['verboseDescription'] = description
+  const body = verbose.split(/\n(.+)/s)[1]
+  if (body) {
+    const replacedBody = body.replace(/ /g, '').replace(/\t/g, '');
+    const parsedArray = replacedBody.split('\n')
+    const parsedVerbose = {};
+    parsedArray.forEach(pair => {
+      const key = pair.split(':')[0]
+      const value = pair.split(':')[1]
+      parsedVerbose[key] = value
+    })
+    event['IAMessage']['Detail']['Info']['parsedVerbose'] = parsedVerbose
+  } else {
+    event['IAMessage']['Detail']['Info']['parsedVerbose'] = ''
+  }
 }
