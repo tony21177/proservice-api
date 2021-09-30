@@ -116,7 +116,8 @@ const parseVerboseForAllLine = event => {
 
   const verbose = event['IAMessage']['Detail']['Info']['Verbose']
   if(!verbose){
-    console.log(event);
+    // console.log("no verbose-----")
+    // console.log(event['IAMessage']['Detail']['Info']);
     return
   }
   const replacedVerbose = verbose.replace(/ /g, '').replace(/\t/g, '');
@@ -135,7 +136,8 @@ const parseVerboseForAllLine = event => {
 const parseVerboseExcludeFirstLine = event => {
   const verbose = event['IAMessage']['Detail']['Info']['Verbose']
   if(!verbose){
-    console.log(event);
+    // console.log("no verbose-----")
+    // console.log(event['IAMessage']['Detail']['Info']);
     return
   }
   const description = verbose.split(/\n(.+)/s)[0]
