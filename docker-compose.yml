@@ -96,9 +96,10 @@ services:
       - 80:80 
     logging:
       driver: gcplogs
-      options:
-        labels: location
-        gcp-log-cmd: true 
+      # options:
+      #  gcp-project: lis-middleware       
+      #  labels: location
+        #  gcp-log-cmd: true 
     environment: 
       opensearch_username: ${opensearch_username}
       opensearch_password: ${opensearch_password}

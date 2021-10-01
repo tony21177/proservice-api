@@ -53,7 +53,8 @@ output.elasticsearch:
   username: admin
   password: lis123
   ssl.verification_mode: none
-
+setup.template.name: "mqtt-event"
+setup.template.pattern: "desktop-event*"
 
 #========================== Filebeat autodiscover ==============================
 # See this URL on how to run Apache2 Filebeat module: # https://www.elastic.co/guide/en/beats/filebeat/current/running-on-docker.html
