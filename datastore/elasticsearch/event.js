@@ -76,6 +76,7 @@ const parseEsResult = result => {
   const total = result.body.hits.total.value
   const events = result.body.hits.hits.map(data => data['_source'])
   parseForVerbose(events)
+  transformDateTime(events)
   return { total: total, scrollId: scrollId, events: events }
 }
 
@@ -115,7 +116,7 @@ const parseForVerbose = events => {
 const parseVerboseForAllLine = event => {
 
   const verbose = event['IAMessage']['Detail']['Info']['Verbose']
-  if(!verbose){
+  if (!verbose) {
     // console.log("no verbose-----")
     // console.log(event['IAMessage']['Detail']['Info']);
     return
@@ -124,8 +125,8 @@ const parseVerboseForAllLine = event => {
   const parsedArray = replacedVerbose.split('\n')
   const parsedVerbose = {};
   parsedArray.forEach(pair => {
-    const key = pair.split(':')[0]
-    const value = pair.split(':')[1]
+    const key = pair.split(/:(.+)/s)[0]
+    const value = pair.split(/:(.+)/s)[1]
     parsedVerbose[key] = value
   })
   event['IAMessage']['Detail']['Info']['verboseDescription'] = event['IAMessage']['Detail']['Info']['Terse']
@@ -135,7 +136,7 @@ const parseVerboseForAllLine = event => {
 
 const parseVerboseExcludeFirstLine = event => {
   const verbose = event['IAMessage']['Detail']['Info']['Verbose']
-  if(!verbose){
+  if (!verbose) {
     // console.log("no verbose-----")
     // console.log(event['IAMessage']['Detail']['Info']);
     return
@@ -144,16 +145,43 @@ const parseVerboseExcludeFirstLine = event => {
   event['IAMessage']['Detail']['Info']['verboseDescription'] = description
   const body = verbose.split(/\n(.+)/s)[1]
   if (body) {
-    const replacedBody = body.replace(/ /g, '').replace(/\t/g, '');
-    const parsedArray = replacedBody.split('\n')
+    const parsedArray = body.split('\n')
     const parsedVerbose = {};
     parsedArray.forEach(pair => {
-      const key = pair.split(':')[0]
-      const value = pair.split(':')[1]
+      let key = pair.split(/:(.+)/s)[0]
+      key = key.replace(/ /g, '')
+      let value = pair.split(/:(.+)/s)[1]
+      // customize value according to different keys
+      value = value.replace(/\t/g, '');
+      if(!key.includes("DeviceError")&&!key.includes("EventTime")&&!key.includes("FileRevision")){
+        value = value.replace(/ /g, '')
+      }
       parsedVerbose[key] = value
     })
     event['IAMessage']['Detail']['Info']['parsedVerbose'] = parsedVerbose
   } else {
     event['IAMessage']['Detail']['Info']['parsedVerbose'] = ''
   }
+}
+
+const transformDateTime = events => {
+  events.forEach(event => {
+    if (event.IAMessage.Detail.Info.FirstOccurrence && event.IAMessage.Detail.Info.FirstOccurrence.trim() != "") {
+      const datetime = new Date(event.IAMessage.Detail.Info.FirstOccurrence);
+      event.IAMessage.Detail.Info.FirstOccurrence = datetime.getTime();
+    }
+    if (event.IAMessage.Detail.Info.TimeOfEvent && event.IAMessage.Detail.Info.TimeOfEvent.trim() != "") {
+      const datetime = new Date(event.IAMessage.Detail.Info.TimeOfEvent);
+      event.IAMessage.Detail.Info.TimeOfEvent = datetime.getTime();
+    }
+    if (event.IAMessage.Header['@TimeStamp'] && event.IAMessage.Header['@TimeStamp'].trim() != ""){
+      const datetime = new Date(event.IAMessage.Header['@TimeStamp']);
+      event.IAMessage.Header['@TimeStamp'] = datetime.getTime();
+    }
+    if (event.Timestamp && event.Timestamp.trim() != ""){
+      const datetime = new Date(event.Timestamp);
+      event.Timestamp = datetime.getTime();
+    }
+
+  })
 }
