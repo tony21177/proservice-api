@@ -121,14 +121,9 @@ const parseVerboseForAllLine = event => {
     // console.log(event['IAMessage']['Detail']['Info']);
     return
   }
-  const replacedVerbose = verbose.replace(/ /g, '').replace(/\t/g, '');
-  const parsedArray = replacedVerbose.split('\n')
+  const parsedArray = verbose.split('\n')
   const parsedVerbose = {};
-  parsedArray.forEach(pair => {
-    const key = pair.split(/:(.+)/s)[0]
-    const value = pair.split(/:(.+)/s)[1]
-    parsedVerbose[key] = value
-  })
+  parseVerboseKeyValue(parsedArray,parsedVerbose)
   event['IAMessage']['Detail']['Info']['verboseDescription'] = event['IAMessage']['Detail']['Info']['Terse']
   event['IAMessage']['Detail']['Info']['parsedVerbose'] = parsedVerbose
 
@@ -147,21 +142,32 @@ const parseVerboseExcludeFirstLine = event => {
   if (body) {
     const parsedArray = body.split('\n')
     const parsedVerbose = {};
-    parsedArray.forEach(pair => {
-      let key = pair.split(/:(.+)/s)[0]
-      key = key.replace(/ /g, '')
-      let value = pair.split(/:(.+)/s)[1]
-      // customize value according to different keys
-      value = value.replace(/\t/g, '');
-      if(!key.includes("DeviceError")&&!key.includes("EventTime")&&!key.includes("FileRevision")){
-        value = value.replace(/ /g, '')
-      }
-      parsedVerbose[key] = value
-    })
+    parseVerboseKeyValue(parsedArray,parsedVerbose)
     event['IAMessage']['Detail']['Info']['parsedVerbose'] = parsedVerbose
   } else {
     event['IAMessage']['Detail']['Info']['parsedVerbose'] = ''
   }
+}
+
+const parseVerboseKeyValue = (rawKeyValueArray,parsedVerbose) =>{
+  rawKeyValueArray.forEach(pair => {
+    let key = pair.split(/:(.+)/s)[0]
+    key = key.replace(/ /g, '')
+    let value = pair.split(/:(.+)/s)[1]
+    // customize value according to different keys
+    // console.log("-------")
+    // console.log("pair:"+pair+"?")
+    if(pair||pair.trim()!=""){
+      if(value){
+        value = value.replace(/\t/g, '');
+        if(!key.includes("Device")&&!key.includes("DeviceError")&&!key.includes("EventTime")&&!key.includes("FileRevision")){
+          // console.log("replace space"+",key="+key)
+          value = value.replace(/ /g, '')
+        }
+      }
+      parsedVerbose[key] = value
+    }          
+  })
 }
 
 const transformDateTime = events => {
