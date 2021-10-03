@@ -105,6 +105,8 @@ services:
       opensearch_password: ${opensearch_password}
       ca_path: ${ca_path}
       es_host: ${es_host}
+      mqtt_username: ${mqtt_username}
+      mqtt_password: ${mqtt_password}
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
     networks:
