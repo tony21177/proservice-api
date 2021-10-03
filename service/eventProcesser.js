@@ -16,8 +16,9 @@ exports.saveEvent = async (req, res, next) => {
     // console.log("eventData", eventData)
     let todayTW = dayjs();
     let result = ""
+    const indexTimestamp = new Date().getTime();
     try {
-        result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData);
+        result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp);
         // console.log("result:", result)
     } catch (ex) {
         console.log("insert ES fail", ex)
@@ -31,7 +32,7 @@ exports.saveEvent = async (req, res, next) => {
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
     console.log("docId:",docId);
-    publishNewestEvent(docId);
+    publishNewestEvent(docId,indexTimestamp);
 
     res.status(200).json({
         status: 200,
@@ -125,6 +126,7 @@ exports.saveRawEvent = async (req, res, next) => {
 }
 
 exports.scrollEvents = async (req, res, next) => {
+    const lastEventId = req.body.lastEventId;
     const from = req.body.from;
     const size = req.body.size;
     const scrollId = req.body.scrollId;

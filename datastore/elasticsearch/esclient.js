@@ -11,8 +11,36 @@ const client = new Client({
     password: config.esPassword
   }
 })
+// add pipeline
+const pipelineContent = {
+  "description": "copy _id to eventId for search after",
+  "processors": [
+    {
+      "set": {
+        "description": "copy _id to eventId for search after",
+        "field": "eventId",
+        "value": "{{_id}}"
+      }
+    }
+  ]
+}
 
+const addPipelineForCopyId =  async function (){
+let result = ""
+try {
+  result = await client.ingest.putPipeline({
+    id: "copy_id_to_eventId",
+    // master_timeout: string,
+    // timeout: string,
+    body: pipelineContent
+  })
+} catch (error) {
+  console.log("error:", error)
+}
+console.log("add pipeline result:",result)
+}
 
-
+addPipelineForCopyId()
 
 exports.esClient = client
+exports.addPipelineForCopyId = addPipelineForCopyId

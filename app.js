@@ -4,7 +4,7 @@ const routes = require('./routes/index')
 const path = require('path'); 
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const app = express();
-var cors = require('cors')
+const cors = require('cors')
 app.use(cors())
 
 app.use(express.json())
@@ -18,6 +18,7 @@ app.use(express.raw({
 app.use(express.urlencoded({ extended: true }))
 // app.use(cookieParser())
 app.use('/', routes);
+
 
 
 module.exports = app

@@ -19,9 +19,9 @@ client.on('connect', () => {
     console.log('mqtt Connected.........................')
 })
 
-const publishNewestEvent = async eventId => {
+const publishNewestEvent = async (eventId,indexTimestamp) => {
     console.log("publishNewestEvent....")
-    let mqttMsg = {lastId:eventId}
+    let mqttMsg = {lastId:eventId,indexTimestamp:indexTimestamp}
 
     client.publish(topic,JSON.stringify(mqttMsg), { qos: 1, retain: true }, (error,packet) => {
         console.log('packet:',packet)

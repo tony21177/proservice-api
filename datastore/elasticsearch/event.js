@@ -1,14 +1,18 @@
 const { esClient } = require('./esclient')
 const util = require('util');
 const { config } = require('../../config/env');
-const { events } = require('@elastic/elasticsearch');
+const { v4: uuidv4 } = require('uuid');
 
-const insertEventLog = async (month, day, data) => {
+
+const insertEventLog = async (month, day, data,indexTimestamp) => {
+  data.indexTimestamp = indexTimestamp;
   const response = await esClient.index({
+    id:uuidv4(),
     index: "event_" + month + "_" + day,
     op_type: 'create',
     refresh: 'true',
-    body: data
+    body: data,
+    pipeline: "copy_id_to_eventId"
   })
   return response
 }
@@ -19,7 +23,8 @@ const insertRawEventLog = async (month, day, data) => {
     index: "raw_xml_" + "event_" + month + "_" + day,
     op_type: 'create',
     refresh: 'true',
-    body: data
+    body: data,
+    pipeline: "copy_id_to_eventId"
   })
   return response
 }
@@ -37,7 +42,7 @@ const scrollEvents = async (from, size, scrollId) => {
     }
     result = await esClient.search({
       index: 'event*',
-      sort: ['IAMessage.Detail.Info.TimeOfEvent:desc'],
+      sort: ['indexTimestamp:desc'],
       from: from,
       size: size,
       scroll: '10m',
@@ -71,10 +76,14 @@ const scrollEvents = async (from, size, scrollId) => {
 }
 exports.scrollEvents = scrollEvents
 
+
 const parseEsResult = result => {
   const scrollId = result.body['_scroll_id']
   const total = result.body.hits.total.value
-  const events = result.body.hits.hits.map(data => data['_source'])
+  const events = result.body.hits.hits.map(data => {
+    data['_source'].eventId = data['_id']
+    return data['_source']
+  })
   parseForVerbose(events)
   transformDateTime(events)
   return { total: total, scrollId: scrollId, events: events }
