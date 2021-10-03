@@ -1,4 +1,4 @@
-const { insertEventLog, scrollEvents } = require('../datastore/elasticsearch/event')
+const { insertEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
 const {publishNewestEvent} = require('../mqtt/mqtt')
@@ -125,14 +125,48 @@ exports.saveRawEvent = async (req, res, next) => {
 
 }
 
+exports.syncEvents = async (req, res, next) => {
+    const size = req.body.size;
+    const lastId = req.body.lastId;
+    const indexTimestamp = req.body.indexTimestamp;
+    let data;
+    try {
+        data = await syncEvents(size,lastId,indexTimestamp)
+        console.log("data:",data)
+    } catch (error) {
+        console.log(error)
+        if (error.toString()=="lastId and indexTimestamp is required") {
+            res.status(400).json({
+                status: 400,
+                success: false,
+                data: error
+            })
+            return
+        }
+        res.status(500).json({
+            status: 500,
+            success: false,
+            data: error
+        })
+        return
+    }
+    res.status(200).json({
+        status: 200,
+        success: true,
+        data: data
+    })
+}
+
+
 exports.scrollEvents = async (req, res, next) => {
-    const lastEventId = req.body.lastEventId;
+    const lastId = req.body.lastId;
+    const indexTimestamp = req.body.indexTimestamp;
     const from = req.body.from;
     const size = req.body.size;
     const scrollId = req.body.scrollId;
     let data;
     try {
-        data = await scrollEvents(from, size, scrollId)
+        data = await scrollEvents(from, size, scrollId,lastId,indexTimestamp)
     } catch (error) {
         console.log(error)
         if (error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {

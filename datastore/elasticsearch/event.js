@@ -30,23 +30,56 @@ const insertRawEventLog = async (month, day, data) => {
 }
 exports.insertRawEventLog = insertRawEventLog
 
-const scrollEvents = async (from, size, scrollId) => {
+const syncEvents = async(size,lastId,indexTimestamp) =>{
+  let result = getEmptyResult();
+  if(!lastId || !indexTimestamp || isNaN(indexTimestamp)){
+    throw new Error("lastId and indexTimestamp is required");
+  }
+  if (!Number.isInteger(size)) {
+    size = 10;
+  }
+  let searchBody = {
+    index: 'event*',
+    sort: ['indexTimestamp:desc','eventId.keyword:desc'],
+    size: size,
+    body:{search_after:[indexTimestamp,lastId]}
+  }
+  result = await esClient.search(searchBody, {
+    ignore: [404],
+    maxRetries: 2
+  })
+  if (result.body.hits.hits.length == 0) {
+    result = getEmptyResult();
+    return result;
+  }
+  result = parseEsResult(result)
+  return result
+}
+
+exports.syncEvents = syncEvents
+
+
+const scrollEvents = async (from, size) => {
   // first 
   let result = getEmptyResult();
   if (!scrollId || scrollId.trim() == '') {
+    
+
     if (!Number.isInteger(size)) {
       size = 10;
     }
     if (!Number.isInteger(from)) {
       from = 0;
     }
-    result = await esClient.search({
+    let searchBody = {
       index: 'event*',
-      sort: ['indexTimestamp:desc'],
+      sort: ['indexTimestamp:desc','eventId.keyword:desc'],
       from: from,
       size: size,
       scroll: '10m',
-    }, {
+    }
+
+    result = await esClient.search(searchBody, {
       ignore: [404],
       maxRetries: 2
     })
