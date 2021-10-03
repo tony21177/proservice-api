@@ -1,6 +1,7 @@
 const { insertEventLog, scrollEvents } = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
+const {publishNewestEvent} = require('../mqtt/mqtt')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
 dayjs.extend(utc)
@@ -12,11 +13,13 @@ dayjs.tz.setDefault("Asia/Taipei")
 
 exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
-    console.log("eventData", eventData)
+    // console.log("eventData", eventData)
     let todayTW = dayjs();
+    let result = ""
     try {
-    const result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData);
-    }catch (ex) {
+        result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData);
+        // console.log("result:", result)
+    } catch (ex) {
         console.log("insert ES fail", ex)
         res.status(500).json({
             status: 500,
@@ -25,7 +28,10 @@ exports.saveEvent = async (req, res, next) => {
         })
         return
     }
-    console.log("es result", result)
+    // publish newest event doc id to mqtt
+    const docId = result.body['_id']
+    console.log("docId:",docId);
+    publishNewestEvent(docId);
 
     res.status(200).json({
         status: 200,
@@ -97,7 +103,7 @@ exports.saveRawEvent = async (req, res, next) => {
         let todayTW = dayjs();
         result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result);
         console.log("es result", result)
-    }catch (err) {
+    } catch (err) {
         console.log("insert into ES error:", err)
         res.status(500).json({
             status: 500,
