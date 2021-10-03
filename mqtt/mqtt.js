@@ -2,6 +2,7 @@ const { config } = require('../config/env')
 const mqtt = require('mqtt')
 
 const connectUrl = config.mqttUrl
+console.log("mqtt url:",connectUrl)
 const mqttOption =  {
     // clientId: config.mqttClientId,
     clean: true,

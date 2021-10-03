@@ -107,6 +107,7 @@ services:
       es_host: ${es_host}
       mqtt_username: ${mqtt_username}
       mqtt_password: ${mqtt_password}
+      mqtt_url: ${mqtt_url}
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
     networks:
