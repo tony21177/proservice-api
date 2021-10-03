@@ -40,7 +40,7 @@ const syncEvents = async(size,lastId,indexTimestamp) =>{
   }
   let searchBody = {
     index: 'event*',
-    sort: ['indexTimestamp:desc','eventId.keyword:desc'],
+    sort: ['indexTimestamp:asc','eventId.keyword:asc'],
     size: size,
     body:{search_after:[indexTimestamp,lastId]}
   }
