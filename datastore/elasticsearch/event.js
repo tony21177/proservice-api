@@ -190,21 +190,32 @@ const parseVerboseExcludeFirstLine = event => {
 }
 
 const parseVerboseKeyValue = (rawKeyValueArray,parsedVerbose) =>{
+  let key;
+  let value;
   rawKeyValueArray.forEach(pair => {
-    let key = pair.split(/:(.+)/s)[0]
-    key = key.replace(/ /g, '')
-    let value = pair.split(/:(.+)/s)[1]
-    // customize value according to different keys
-    // console.log("-------")
-    // console.log("pair:"+pair+"?")
+    if(pair.includes("Backup")){
+      //key = pair.split(/on(.+)/s)[0]
+      //value = pair.split(/on(.+)/s)[1]
+      key = pair.split(" ")
+      key = pair.split(" ")[0]+pair.split(" ")[1]+pair.split(" ")[2]
+      value = pair.split(" ")[3]+" "+pair.split(" ")[4]+" "+pair.split(" ")[5]
+    }else{
+      key = pair.split(/:(.+)/s)[0]
+      key = key.replace(/ /g, '')
+      value = pair.split(/:(.+)/s)[1]
+    }
+
+    
+    
     if(pair||pair.trim()!=""){
       if(value){
         value = value.replace(/\t/g, '');
-        if(!key.includes("Device")&&!key.includes("DeviceError")&&!key.includes("EventTime")&&!key.includes("FileRevision")){
+        if(!key.includes("Device")&&!key.includes("DeviceError")&&!key.includes("EventTime")&&!key.includes("FileRevision")&&!key.includes("Backup")){
           // console.log("replace space"+",key="+key)
           value = value.replace(/ /g, '')
         }
       }
+      if(value=="{NULL}") value=""
       parsedVerbose[key] = value
     }          
   })
