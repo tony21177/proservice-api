@@ -59,7 +59,7 @@ const syncEvents = async(size,lastId,indexTimestamp) =>{
 exports.syncEvents = syncEvents
 
 
-const scrollEvents = async (from, size) => {
+const scrollEvents = async (from, size, scrollId) => {
   // first 
   let result = getEmptyResult();
   if (typeof scrollId == 'undefined'||!scrollId || scrollId.trim() == '') {
