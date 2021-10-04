@@ -169,7 +169,7 @@ exports.scrollEvents = async (req, res, next) => {
         data = await scrollEvents(from, size, scrollId,lastId,indexTimestamp)
     } catch (error) {
         console.log(error)
-        if (error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {
+        if (typeof error.meta!='undefined'&&error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {
             res.status(400).json({
                 status: 400,
                 success: false,

@@ -62,9 +62,7 @@ exports.syncEvents = syncEvents
 const scrollEvents = async (from, size) => {
   // first 
   let result = getEmptyResult();
-  if (!scrollId || scrollId.trim() == '') {
-    
-
+  if (typeof scrollId == 'undefined'||!scrollId || scrollId.trim() == '') {
     if (!Number.isInteger(size)) {
       size = 10;
     }
