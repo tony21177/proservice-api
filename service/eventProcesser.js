@@ -166,7 +166,7 @@ exports.scrollEvents = async (req, res, next) => {
     const scrollId = req.body.scrollId;
     let data;
     try {
-        data = await scrollEvents(from, size, scrollId,lastId,indexTimestamp)
+        data = await scrollEvents(from, size, scrollId)
     } catch (error) {
         console.log(error)
         if (typeof error.meta!='undefined'&&error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {
