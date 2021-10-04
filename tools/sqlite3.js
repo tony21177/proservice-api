@@ -38,10 +38,10 @@ logDb.serialize(() => {
                 const text = result['IAMessage']['Body']['Data']['#text'].replace(/\t/g,'').replace(/\n/g,'')
                 const rootText = "<root>"+text+"</root>"
                 let infoObjecty = await xml2js.parseStringPromise(rootText, parseOption);
-                result['Detail'] = { ['Info']: infoObjecty.root }
-                console.log(result.Detail.Info.FirstOccurrence)
-                if(result.Detail.Info.FirstOccurrence=="Unknown"){
-                    delete result.Detail.Info.FirstOccurrence
+                result['IAMessage']['Detail'] = { ['Info']: infoObjecty.root }
+                console.log(result.IAMessage.Detail.Info.FirstOccurrence)
+                if(result.IAMessage.Detail.Info.FirstOccurrence=="Unknown"){
+                    delete result.IAMessage.Detail.Info.FirstOccurrence
                     console.log(result)
                 }
             } catch (err) {
