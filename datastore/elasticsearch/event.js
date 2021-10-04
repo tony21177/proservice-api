@@ -145,7 +145,7 @@ const clearScroll = async (scrollId) => {
 const parseForVerbose = events => {
   events.forEach(event => {
     const Terse = event['IAMessage']['Detail']['Info']['Terse']
-    if (Terse == 'RV Supply is low' || Terse == 'Aspiration Monitor detected possible obstruction') {
+    if (Terse == 'RV Supply is low' || Terse == 'Aspiration Monitor detected possible obstruction' || Terse == 'Run completed') {
       parseVerboseForAllLine(event)
     } else {
       parseVerboseExcludeFirstLine(event)
