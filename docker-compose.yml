@@ -75,7 +75,7 @@ services:
     image: opensearchproject/opensearch-dashboards:1.0.1
     container_name: opensearch-dashboards
     ports:
-      - 443:443
+      - 444:443
     expose:
       - "443"
     environment:
@@ -94,6 +94,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 80:80 
+      - 443:443
     logging:
       driver: gcplogs
       # options:
@@ -112,6 +113,9 @@ services:
       - ./certs/gen/root-ca.pem:${ca_path}  
     networks:
       - opensearch-net  
+    depends_on:
+      - opensearch-node1
+      - opensearch-node2  
   # How to Tune Elastic Beats Performance: A Practical Example with Batch Size, Worker Count, and More
   # https://www.elastic.co/blog/how-to-tune-elastic-beats-performance-a-practical-example-with-batch-size-worker-count-and-more?blade=tw&hulk=social
   filebeat:
