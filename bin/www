@@ -5,6 +5,7 @@
  */
 const app = require('../app')
 const http = require('http')
+const fs = require('fs')
 
 /**
  * Get port from environment and store in Express
