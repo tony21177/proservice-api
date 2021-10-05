@@ -111,6 +111,7 @@ services:
       mqtt_url: ${mqtt_url}
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
+      - /etc/letsencrypt/archive/apiproservice.ddns.net:/etc/letsencrypt/live/apiproservice.ddns.net
     networks:
       - opensearch-net  
     depends_on:
