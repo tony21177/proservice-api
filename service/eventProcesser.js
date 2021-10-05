@@ -1,4 +1,4 @@
-const { insertEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
+const { insertEventLog,insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
 const {publishNewestEvent} = require('../mqtt/mqtt')
