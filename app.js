@@ -4,6 +4,9 @@ const routes = require('./routes/index')
 const path = require('path'); 
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const app = express();
+app.use('/.well-known',express.static(__dirname + '/static/.well-known'));
+
+
 const cors = require('cors')
 app.use(cors())
 
