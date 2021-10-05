@@ -17,12 +17,28 @@ app.set('port', port)
  */
 const server = http.createServer(app)
 
+// Certificate
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/apiproservice.ddns.net/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/apiproservice.ddns.net/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/apiproservice.ddns.net/chain.pem', 'utf8');
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
+const httpsServer = https.createServer(credentials,app)
+
 /**
  * Listen on provided port, on all network interfaces
  */
 server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)
+
+httpsServer.listen(443)
+httpsServer.on('error', onError)
+httpsServer.on('listening', onListening)
 
 /**
  * Normalize a port into a number, string, or false
