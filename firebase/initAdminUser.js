@@ -19,7 +19,7 @@ firebaseAdmin
         .then((userRecord) => {
           // See the UserRecord reference doc for the contents of userRecord.
           console.log(`Successfully fetched user data: ${userRecord.toJSON()}`);
-          insertUser(userRecord.uid,email,1,0).then(result=>{
+          insertUser(userRecord.uid,process.env.account,1,0).then(result=>{
             console.log('insert user result:',result)
           })
         })
