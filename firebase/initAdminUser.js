@@ -7,7 +7,7 @@ firebaseAdmin
   .createUser({
     email: process.env.account,
     emailVerified: true,
-    password: process.env.process,
+    password: process.env.password,
     displayName: 'Administor',
     disabled: false,
   })
