@@ -13,6 +13,7 @@ const { initializeApp } =require('firebase/app');
 const firebaseConfig = require("./appConfig.json");
 
 // Initialize Firebase
+console.log("firebase initialize...")
 const firebaseApp = initializeApp(firebaseConfig);
 
 module.exports = {firebaseAdmin,firebaseApp}
