@@ -7,7 +7,7 @@ exports.authUserEmailAndPass = async(email,password)=>{
         const userCredential = await signInWithEmailAndPassword(auth,email,password)
         const user = userCredential.user;
         const token = await user.getIdToken();
-        return {accesssToken:token,uid:result.user.uid}
+        return {accesssToken:token,uid:user.uid}
     }catch(error){
         console.error("authUserEmailAndPass errorCode:%s,errorMessage",error.code,error.message)
         throw Error("auth error:"+error.message)
