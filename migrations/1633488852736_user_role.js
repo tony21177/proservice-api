@@ -21,7 +21,7 @@ exports.up = pgm => {
     id: 'id',
     uid: { type: 'varchar(1000)', notNull: true, unique: true },
     email: { type: 'varchar(1000)', notNull: true, unique: true },
-    role: {},
+    role: {type: 'integer',notNull:true},
     createdAt: {
       type: 'timestamp',
       notNull: true,
