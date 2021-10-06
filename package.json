@@ -11,7 +11,9 @@
     "start": "clientId=api-server mqtt_url=mqtt://34.80.241.20:1883 mqtt_clientId=api-server-123 mqtt_username=api-server mqtt_password=lis123 es_host=https://34.80.62.198:9200 NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=admin opensearch_password=lis123 NODE_ENV=production node ./bin/www",
     "debug": "clientId=api-server mqtt_url=mqtt://34.80.241.20:1883 mqtt_clientId=api-server-123 mqtt_username=api-server mqtt_password=lis123 es_host=https://34.80.62.198:9200 NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=admin opensearch_password=lis123 NODE_ENV=production node --inspect ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "insertDataLog": "es_host=https://34.80.62.198:9200 NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=admin opensearch_password=lis123 NODE_ENV=production node tools/sqlite3.js"
+    "insertDataLog": "es_host=https://34.80.62.198:9200 NODE_TLS_REJECT_UNAUTHORIZED=0 opensearch_username=admin opensearch_password=lis123 NODE_ENV=production node tools/sqlite3.js",
+    "initAdmin": "account=admin@lis.com password=lis123 node --inspect ./firebase/initAdminUser.js",
+    "migrate": "DATABASE_URL=postgres://admin:lis123@database:5432/lis"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +27,8 @@
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "firebase": "^9.1.1",
+    "firebase-admin": "^9.12.0",
     "mqtt": "^4.2.8",
     "node-pg-migrate": "^5.10.0",
     "nodemon": "^2.0.12",

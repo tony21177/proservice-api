@@ -109,6 +109,11 @@ services:
       mqtt_username: ${mqtt_username}
       mqtt_password: ${mqtt_password}
       mqtt_url: ${mqtt_url}
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
       - /etc/letsencrypt:/etc/letsencrypt
@@ -117,6 +122,7 @@ services:
     depends_on:
       - opensearch-node1
       - opensearch-node2  
+      - database
   # How to Tune Elastic Beats Performance: A Practical Example with Batch Size, Worker Count, and More
   # https://www.elastic.co/blog/how-to-tune-elastic-beats-performance-a-practical-example-with-batch-size-worker-count-and-more?blade=tw&hulk=social
   filebeat:
@@ -153,12 +159,25 @@ services:
     command: ["--strict.perms=false"]
     deploy:
       mode: global
-
+  database:
+    image: postgres:13
+    restart: unless-stopped
+    shm_size: "256mb"
+    environment:
+      - POSTGRES_DB=$POSTGRES_DBNAME
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - PGDATA=/var/lib/postgresql/data/pgdata/
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    networks:
+      - elknet
 
 volumes:
   opensearch-data1:
   opensearch-data2:
   filebeat:
+  database-data:
 
 networks:
   opensearch-net:
