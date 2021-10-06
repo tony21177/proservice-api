@@ -14,10 +14,8 @@ exports.up = pgm => {
       default: pgm.func('current_timestamp'),
     }
   })
-  pgm.sql(`INSERT INTO roles (id,role, description) VALUES
-  (1,{role} ,'administrator');`,{role:roleConstant.administor})
-  pgm.sql(`INSERT INTO roles (id,role, description) VALUES
-  (2,{role} ,'administrator');`,{role:roleConstant.generalUser})
+  pgm.sql("INSERT INTO roles (id,role, description) VALUES (1,{role} ,'administrator');",{role:roleConstant.administor})
+  pgm.sql("INSERT INTO roles (id,role, description) VALUES (2,{role} ,'administrator');",{role:roleConstant.generalUser})
 
   pgm.createTable('users', {
     id: 'id',
