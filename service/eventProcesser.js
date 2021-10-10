@@ -2,6 +2,7 @@ const { insertEventLog,insertRawEventLog, scrollEvents, syncEvents } = require('
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
 const {publishNewestEvent} = require('../mqtt/mqtt')
+const {publicLatestEvent} = require('../firebase/fcm')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
 dayjs.extend(utc)
@@ -33,7 +34,7 @@ exports.saveEvent = async (req, res, next) => {
     const docId = result.body['_id']
     console.log("docId:",docId);
     publishNewestEvent(docId,indexTimestamp);
-
+    publicLatestEvent(docId,indexTimestamp);
     res.status(200).json({
         status: 200,
         success: true,
