@@ -43,6 +43,7 @@ exports.tokenProtect = async (req, res, next) => {
         .then((decodedToken) => {
             const uid = decodedToken.uid;
             // ...
+            req.uid = uid
             req.email = decodedToken.email
             next();
         })

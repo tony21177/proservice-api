@@ -14,9 +14,14 @@ exports.up = pgm => {
             type: 'timestamp',
             notNull: true,
             default: pgm.func('current_timestamp'),
+        },
+        updatedAt: {
+            type: 'timestamp',
+            notNull: true,
+            default: pgm.func('current_timestamp'),
         }
     })
-    pgm.addConstraint(user_fcm_token, 'unique_uid_token', 'UNIQUE (uid,fcmToken)')
+    pgm.addConstraint('user_fcm_token', 'unique_uid_token', 'UNIQUE (uid,"fcmToken")')
 
 };
 
