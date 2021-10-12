@@ -24,6 +24,7 @@ exports.up = pgm => {
     password:{ type: 'varchar(1000)', notNull: false},
     authType:{ type: 'smallint', notNull: true,default:0,comment:"0:firebase,"},
     role: {type: 'integer',notNull:true},
+    multiFactorEnabled: {type:'boolean',default:false,notNull:true},
     createdAt: {
       type: 'timestamp',
       notNull: true,
