@@ -11,5 +11,18 @@ exports.upsertUserFcmToken = async (uid,fcmToken,envId="",envLocation="",envInfo
     }
 
     return result
+}
 
+exports.getAllFcmTokens = async ()=>{
+    let result="";
+    try {
+        result = await db.query('select "fcmToken" from "user_fcm_token"');
+        if(result.rowCount==0) return [];
+        const tokens = result.rows.map(ele=>ele.fcmToken)
+        console.log("all tokens array:",tokens)
+        return tokens
+    } catch (e) {
+        console.log("getAllFcmTokens error", e.message);
+        throw e;
+    }
 }
