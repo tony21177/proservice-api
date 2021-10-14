@@ -1,9 +1,10 @@
 require('../firebase')
 const {getAuth,signInWithEmailAndPassword} = require('firebase/auth')
 const {firebaseAdmin} = require('../firebase')
+const {logger} = require('../logger')
 
 exports.authUserEmailAndPass = async(email,password)=>{
-    console.log("authUserEmailAndPass..")
+    logger.info("authUserEmailAndPass..")
     try{
         const auth = getAuth()
         const userCredential = await signInWithEmailAndPassword(auth,email,password)
@@ -11,7 +12,7 @@ exports.authUserEmailAndPass = async(email,password)=>{
         const token = await user.getIdToken();
         return {accesssToken:token,uid:user.uid}
     }catch(error){
-        console.error("authUserEmailAndPass errorCode:%s,errorMessage",error.code,error.message)
+        logger.error("authUserEmailAndPass errorCode:%s,errorMessage",error.code,error.message)
         throw Error("auth error:"+error.code)
     }
     

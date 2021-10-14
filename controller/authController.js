@@ -1,5 +1,5 @@
 const {authUserEmailAndPass}=require('../auth/authenticate')
-
+const {logger} = require('../logger')
 
 exports.login = async (req, res, next)=>{
     if(!req.body.email||!req.body.password||req.body.email.trim()==""||req.body.password==""){
@@ -11,10 +11,8 @@ exports.login = async (req, res, next)=>{
         })
         return
     }
-    console.log("vlidate success")
     try{
         const result = await authUserEmailAndPass(req.body.email,req.body.password);
-        console.log(result)
         res.status(200).json({
             success: true,
             data: {
@@ -22,7 +20,7 @@ exports.login = async (req, res, next)=>{
             },
         })
     }catch(error){
-        console.log("auth fail:",error)
+        logger.info("auth fail:",error)
         res.status(400).json({
             success: false,
             data: {

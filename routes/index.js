@@ -4,6 +4,7 @@ const eventProcesser = require('../controller/eventProcesserController')
 const authService = require('../controller/authController')
 const {tokenProtect} = require('../auth/authenticate')
 const userService = require('../controller/userController')
+const {logger} = require('../logger')
 
 // restful api for mqtt
 router.post("/api/v1/event",eventProcesser.saveEvent);

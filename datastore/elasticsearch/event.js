@@ -2,6 +2,7 @@ const { esClient } = require('./esclient')
 const util = require('util');
 const { config } = require('../../config/env');
 const { v4: uuidv4 } = require('uuid');
+const {logger} = require('../../logger')
 
 
 const insertEventLog = async (month, day, data,indexTimestamp) => {
@@ -135,10 +136,10 @@ const clearScroll = async (scrollId) => {
     }
   })
     .then(res => {
-      console.log(`statusCode: ${res.status}`)
+      logger.debug(`statusCode: ${res.status}`)
     })
     .catch(error => {
-      console.error(error)
+      logger.error("delete scroll error:",error)
     })
 }
 
@@ -157,8 +158,6 @@ const parseVerboseForAllLine = event => {
 
   const verbose = event['IAMessage']['Detail']['Info']['Verbose']
   if (!verbose) {
-    // console.log("no verbose-----")
-    // console.log(event['IAMessage']['Detail']['Info']);
     return
   }
   const parsedArray = verbose.split('\n')
@@ -172,8 +171,6 @@ const parseVerboseForAllLine = event => {
 const parseVerboseExcludeFirstLine = event => {
   const verbose = event['IAMessage']['Detail']['Info']['Verbose']
   if (!verbose) {
-    // console.log("no verbose-----")
-    // console.log(event['IAMessage']['Detail']['Info']);
     return
   }
   const description = verbose.split(/\n(.+)/s)[0]
@@ -211,7 +208,6 @@ const parseVerboseKeyValue = (rawKeyValueArray,parsedVerbose) =>{
       if(value){
         value = value.replace(/\t/g, '');
         if(!key.includes("Device")&&!key.includes("DeviceError")&&!key.includes("EventTime")&&!key.includes("FileRevision")&&!key.includes("Backup")){
-          // console.log("replace space"+",key="+key)
           value = value.replace(/ /g, '')
         }
       }

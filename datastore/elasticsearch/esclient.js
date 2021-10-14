@@ -1,9 +1,6 @@
 const { Client } = require('@elastic/elasticsearch')
 const { config } = require('../../config/env')
-
-// console.log('username:',config.esUsername)
-// console.log('password:',config.esPassword)
-// console.log('node:',config.es_host)
+const {logger} = require('../../logger')
 const client = new Client({
   node: config.es_host,
   auth: {
@@ -35,9 +32,9 @@ try {
     body: pipelineContent
   })
 } catch (error) {
-  console.log("error:", error)
+  logger.error("addPipelineForCopyId error:", error)
 }
-console.log("add pipeline result:",result)
+logger.debug("add pipeline result:",result)
 }
 
 addPipelineForCopyId()

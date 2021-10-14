@@ -1,20 +1,20 @@
 const { insertEventLog, scrollEvents } = require('../datastore/elasticsearch/event')
 var sqlite3 = require('sqlite3').verbose();
 const xml2js = require('xml2js');
+const {logger} = require('../logger')
 
 let logDb = new sqlite3.Database('./tools/DataLog.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
-        console.error(err.message);
+        logger.error(err.message);
     }
-    console.log('Connected to the my database.');
+    logger.info('Connected to the my database.');
 });
 
 
 logDb.serialize(() => {
     logDb.each(`select raw from logs`, async (err, row) => {
         if (err) {
-            console.log("sql error")
-            console.error(err.message);
+            logger.error("sql error:",err.message);
         }
         let raw = row.raw;
         if (raw != 'Raw String') {
@@ -30,7 +30,7 @@ logDb.serialize(() => {
             try {
                 result = await xml2js.parseStringPromise(raw.replace("\ufeff", ""), parseOption);
             } catch (err) {
-                // console.log("parse Body  error:", err)
+                logger.error("parse Body  error:", err)
                 return
             }
             // add Detail
@@ -39,20 +39,17 @@ logDb.serialize(() => {
                 const rootText = "<root>"+text+"</root>"
                 let infoObjecty = await xml2js.parseStringPromise(rootText, parseOption);
                 result['IAMessage']['Detail'] = { ['Info']: infoObjecty.root }
-                console.log(result.IAMessage.Detail.Info.FirstOccurrence)
                 if(result.IAMessage.Detail.Info.FirstOccurrence=="Unknown"){
                     delete result.IAMessage.Detail.Info.FirstOccurrence
-                    console.log(result)
                 }
             } catch (err) {
-                console.log("parse Detail error:", err)
+                logger.error("parse Detail error:", err)
             }
 
             try {
                 const response = await insertEventLog(9, 26, result);
             } catch (err) {
-                console.log("insert es error")
-                console.log(err)
+                logger.error("insert es error:",err)
             }
 
         }

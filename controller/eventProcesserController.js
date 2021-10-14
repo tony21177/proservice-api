@@ -4,6 +4,7 @@ const xml2js = require('xml2js');
 const {publishNewestEvent} = require('../mqtt/mqtt')
 const {getAllFcmTokens} = require('../datastore/postgres/user_fcm')
 const {publicLatestEvent,publicLatestEventToDevices} = require('../firebase/fcm')
+const {logger} = require('../logger')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
 dayjs.extend(utc)
@@ -15,15 +16,13 @@ dayjs.tz.setDefault("Asia/Taipei")
 
 exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
-    // console.log("eventData", eventData)
     let todayTW = dayjs();
     let result = ""
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp);
-        // console.log("result:", result)
     } catch (ex) {
-        console.log("insert ES fail", ex)
+        logger.error("insert ES fail", ex)
         res.status(500).json({
             status: 500,
             success: false,
@@ -33,7 +32,7 @@ exports.saveEvent = async (req, res, next) => {
     }
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
-    console.log("docId:",docId);
+    logger.info("docId:",docId);
     publishNewestEvent(docId,indexTimestamp);
     publicLatestEvent(docId,indexTimestamp);
     const tokenArray = await getAllFcmTokens();
@@ -48,19 +47,17 @@ exports.saveEvent = async (req, res, next) => {
 
 exports.saveRawEvent = async (req, res, next) => {
     const rawBodyBuf = req.rawBody;
-    console.log("rawBodyBuf:", rawBodyBuf)
     let xml;
     try {
         xml = rawBodyBuf.toString('latin1');
     } catch (ex) {
-        console.log("toString fail", ex)
+        logger.error("toString fail", ex)
         res.status(500).json({
             status: 500,
             success: false,
             data: ex
         })
     }
-    console.log("xml raw data:", xml)
     const parseOption = {
         explicitArray: false,
         ignoreAttrs: false,
@@ -74,9 +71,8 @@ exports.saveRawEvent = async (req, res, next) => {
         // parse Body
         result = await xml2js.parseStringPromise(xml.replace("\ufeff", ""), parseOption);
         result['isRawISO88591'] = true
-        console.log("successful result:" + result)
     } catch (err) {
-        console.log("parse xml error:", err);
+        logger.error("parse xml error:", err);
         res.status(500).json({
             status: 500,
             success: false,
@@ -90,12 +86,11 @@ exports.saveRawEvent = async (req, res, next) => {
         const rootText = "<root>" + text + "</root>"
         let infoObjecty = await xml2js.parseStringPromise(rootText, parseOption);
         result['Detail'] = { ['Info']: infoObjecty.root }
-        console.log(result.Detail.Info.FirstOccurrence)
         if (result.Detail.Info.FirstOccurrence == "Unknown") {
             delete result.Detail.Info.FirstOccurrence
         }
     } catch (err) {
-        console.log("parse Detail error:", err)
+        logger.error("parse Detail error:", err)
         res.status(500).json({
             status: 500,
             success: false,
@@ -108,9 +103,8 @@ exports.saveRawEvent = async (req, res, next) => {
     try {
         let todayTW = dayjs();
         result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result);
-        console.log("es result", result)
     } catch (err) {
-        console.log("insert into ES error:", err)
+        logger.error("insert into ES error:", err)
         res.status(500).json({
             status: 500,
             success: false,
@@ -137,9 +131,8 @@ exports.syncEvents = async (req, res, next) => {
     let data;
     try {
         data = await syncEvents(size,lastId,indexTimestamp)
-        console.log("data:",data)
     } catch (error) {
-        console.log(error)
+        logger.error("syncEvents error:",error)
         if (error.toString()=="lastId and indexTimestamp is required") {
             res.status(400).json({
                 status: 400,
@@ -173,7 +166,7 @@ exports.scrollEvents = async (req, res, next) => {
     try {
         data = await scrollEvents(from, size, scrollId)
     } catch (error) {
-        console.log(error)
+        logger.info("scrollEvents error:",error)
         if (typeof error.meta!='undefined'&&error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {
             res.status(400).json({
                 status: 400,
