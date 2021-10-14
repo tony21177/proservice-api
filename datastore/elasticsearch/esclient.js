@@ -1,6 +1,7 @@
 const { Client } = require('@elastic/elasticsearch')
 const { config } = require('../../config/env')
-const {logger} = require('../../logger')
+const { logger } = require('../../logger')
+
 const client = new Client({
   node: config.es_host,
   auth: {
@@ -22,22 +23,43 @@ const pipelineContent = {
   ]
 }
 
-const addPipelineForCopyId =  async function (){
-let result = ""
-try {
-  result = await client.ingest.putPipeline({
-    id: "copy_id_to_eventId",
-    // master_timeout: string,
-    // timeout: string,
-    body: pipelineContent
-  })
-} catch (error) {
-  logger.error("addPipelineForCopyId error:", error)
+const addPipelineForCopyId = async function () {
+  let result = ""
+  try {
+    result = await client.ingest.putPipeline({
+      id: "copy_id_to_eventId",
+      // master_timeout: string,
+      // timeout: string,
+      body: pipelineContent
+    })
+  } catch (error) {
+    logger.error("addPipelineForCopyId error:", error)
+  }
+  logger.debug("add pipeline result:", result)
 }
-logger.debug("add pipeline result:",result)
+const putEventIndexTimestampField = async () => {
+  let result = ""
+  try {
+    result = await client.indices.putMapping({
+      index: 'event*',
+      body: {
+        "properties": {
+          "indexTimestamp": {
+            "type": "date"
+          }
+        }
+      }
+    })
+  } catch (error) {
+    logger.error("putEventIndexTimestampField error:", error)
+  }
+  logger.info("putEventIndexTimestampField result:", result)
 }
 
+
+
 addPipelineForCopyId()
+putEventIndexTimestampField()
 
 exports.esClient = client
 exports.addPipelineForCopyId = addPipelineForCopyId
