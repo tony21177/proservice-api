@@ -1,6 +1,7 @@
 const { Client } = require('@elastic/elasticsearch')
 const { config } = require('../../config/env')
 const { logger } = require('../../logger')
+const {monitoringForNoDataLastingMinutes} = require('../elasticsearch/watch')
 
 const client = new Client({
   node: config.es_host,
@@ -59,7 +60,8 @@ const putEventIndexTimestampField = async () => {
 
 
 addPipelineForCopyId()
-putEventIndexTimestampField()
+// putEventIndexTimestampField()
+monitoringForNoDataLastingMinutes()
 
 exports.esClient = client
 exports.addPipelineForCopyId = addPipelineForCopyId
