@@ -61,7 +61,7 @@ const putEventIndexTimestampField = async () => {
 
 addPipelineForCopyId()
 // putEventIndexTimestampField()
-monitoringForNoDataLastingMinutes()
+// monitoringForNoDataLastingMinutes()
 
 exports.esClient = client
 exports.addPipelineForCopyId = addPipelineForCopyId
