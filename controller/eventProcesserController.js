@@ -24,7 +24,7 @@ exports.saveEvent = async (req, res, next) => {
         result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp,location);
     } catch (ex) {
         logger.error("insert ES fail", ex)
-        logger.error("eventData:",eventData)
+        logger.error("eventData:",JSON.stringify(eventData))
         insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp,location);
         res.status(500).json({
             status: 500,

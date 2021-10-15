@@ -1,7 +1,7 @@
 const { Client } = require('@elastic/elasticsearch')
 const { config } = require('../../config/env')
 const { logger } = require('../../logger')
-const {eventIndexMapping} = require('../elasticsearch/eventIndexMapping')
+const { eventIndexMapping } = require('../elasticsearch/eventIndexMapping')
 
 const client = new Client({
   node: config.es_host,
@@ -10,6 +10,13 @@ const client = new Client({
     password: config.esPassword
   }
 })
+const code = []
+code.push("if(ctx._source.IAMessage.Detail.Info.FirstOccurrence == 'Unknown') {");
+code.push("for(item in ctx.IAMessage.Detail.Info) {");
+code.push("item.remove('FirstOccurrence');");
+code.push("} ")
+code.push("}")
+source = code.join(" ");
 // add pipeline
 const pipelineContent = {
   "description": "copy _id to eventId for search after",
@@ -20,7 +27,11 @@ const pipelineContent = {
         "field": "eventId",
         "value": "{{_id}}"
       }
-    }
+    }, {
+      "script": {
+        "source": source
+      }
+  }
   ]
 }
 
@@ -60,7 +71,7 @@ const putEventIndexTimestampField = async () => {
 
 
 
-const putEventIndexMappingTemplate = async ()=>{
+const putEventIndexMappingTemplate = async () => {
   let result = ""
   try {
     result = await client.indices.putTemplate({
