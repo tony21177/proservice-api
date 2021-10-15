@@ -1,7 +1,7 @@
 const { Client } = require('@elastic/elasticsearch')
 const { config } = require('../../config/env')
 const { logger } = require('../../logger')
-const {monitoringForNoDataLastingMinutes} = require('../elasticsearch/watch')
+const {eventIndexMapping} = require('../elasticsearch/eventIndexMapping')
 
 const client = new Client({
   node: config.es_host,
@@ -59,9 +59,26 @@ const putEventIndexTimestampField = async () => {
 
 
 
+
+const putEventIndexMappingTemplate = async ()=>{
+  let result = ""
+  try {
+    result = await client.indices.putTemplate({
+      name: 'event_template',
+      body: {
+        "index_patterns": ["event*"],
+        "mappings": eventIndexMapping
+      }
+    })
+  } catch (error) {
+    logger.error("putEventIndexMappingTemplate error:", error)
+  }
+  logger.info("putEventIndexMappingTemplate result:", result)
+}
+
+
 addPipelineForCopyId()
-// putEventIndexTimestampField()
-// monitoringForNoDataLastingMinutes()
+putEventIndexMappingTemplate()
 
 exports.esClient = client
 exports.addPipelineForCopyId = addPipelineForCopyId
