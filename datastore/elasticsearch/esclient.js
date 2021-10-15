@@ -11,8 +11,8 @@ const client = new Client({
   }
 })
 const code = []
-code.push("if(ctx._source.IAMessage.Detail.Info.FirstOccurrence == 'Unknown') {");
-code.push("for(item in ctx.IAMessage.Detail.Info) {");
+code.push("if(ctx.Detail.Info.FirstOccurrence == 'Unknown') {");
+code.push("for(item in ctx.Detail.Info) {");
 code.push("item.remove('FirstOccurrence');");
 code.push("} ")
 code.push("}")
@@ -28,10 +28,12 @@ const pipelineContent = {
         "value": "{{_id}}"
       }
     }, {
-      "script": {
-        "source": source
+      "remove": {
+        "description": "Drop FirstOccurrence when Unknown",
+        "field": "Detail.Info.FirstOccurrence",
+        "if": "ctx?.Detail?.Info?.FirstOccurrence == 'Unknown'"
       }
-  }
+    }
   ]
 }
 
