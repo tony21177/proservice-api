@@ -51,27 +51,6 @@ const addPipelineForCopyId = async function () {
   }
   logger.debug("add pipeline result:", result)
 }
-const putEventIndexTimestampField = async () => {
-  let result = ""
-  try {
-    result = await client.indices.putMapping({
-      index: 'event*',
-      body: {
-        "properties": {
-          "indexTimestamp": {
-            "type": "date"
-          }
-        }
-      }
-    })
-  } catch (error) {
-    logger.error("putEventIndexTimestampField error:", error)
-  }
-  logger.info("putEventIndexTimestampField result:", result)
-}
-
-
-
 
 const putEventIndexMappingTemplate = async () => {
   let result = ""
