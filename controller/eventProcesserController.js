@@ -110,7 +110,7 @@ exports.saveRawEvent = async (req, res, next) => {
     // insert to ES
     try {
         let todayTW = dayjs();
-        let location = req.location === undefined ? "CMUH" : req.location
+        let location = req.location === undefined ? "cmhu" : req.location
         result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result, location);
     } catch (err) {
         logger.error("insert into ES error:", err)
