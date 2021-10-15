@@ -5,11 +5,11 @@ const { v4: uuidv4 } = require('uuid');
 const {logger} = require('../../logger')
 
 
-const insertEventLog = async (month, day, data,indexTimestamp) => {
+const insertEventLog = async (month, day, data,indexTimestamp,location) => {
   data.indexTimestamp = indexTimestamp;
   const response = await esClient.index({
     id:uuidv4(),
-    index: "event_" + month + "_" + day,
+    index: "event_" +location+"_"+ month + "_" + day,
     op_type: 'create',
     refresh: 'true',
     body: data,
@@ -19,11 +19,11 @@ const insertEventLog = async (month, day, data,indexTimestamp) => {
 }
 exports.insertEventLog = insertEventLog
 
-const insertFailedEventLog = async (month, day, data,indexTimestamp) => {
+const insertFailedEventLog = async (month, day, data,indexTimestamp,location) => {
   data.indexTimestamp = indexTimestamp;
   const response = await esClient.index({
     id:uuidv4(),
-    index: "failed_event_" + month + "_" + day,
+    index: "failed_event_" +location+"_"+ month + "_" + day,
     op_type: 'create',
     refresh: 'true',
     body: data,
@@ -33,9 +33,9 @@ const insertFailedEventLog = async (month, day, data,indexTimestamp) => {
 }
 exports.insertFailedEventLog = insertFailedEventLog
 
-const insertRawEventLog = async (month, day, data) => {
+const insertRawEventLog = async (month, day, data,location) => {
   const response = await esClient.index({
-    index: "raw_xml_" + "event_" + month + "_" + day,
+    index: "raw_xml_" + "event_" +location+"_"+ month + "_" + day,
     op_type: 'create',
     refresh: 'true',
     body: data,

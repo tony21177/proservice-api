@@ -18,13 +18,14 @@ exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
     let todayTW = dayjs();
     let result = ""
+    let location = req.location===undefined?"CMUH":req.location
     const indexTimestamp = new Date().getTime();
     try {
-        result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp);
+        result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp,location);
     } catch (ex) {
         logger.error("insert ES fail", ex)
         logger.error("eventData:",eventData)
-        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp);
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp,location);
         res.status(500).json({
             status: 500,
             success: false,
@@ -104,7 +105,8 @@ exports.saveRawEvent = async (req, res, next) => {
     // insert to ES
     try {
         let todayTW = dayjs();
-        result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result);
+        let location = req.location===undefined?"CMUH":req.location
+        result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result,location);
     } catch (err) {
         logger.error("insert into ES error:", err)
         res.status(500).json({
