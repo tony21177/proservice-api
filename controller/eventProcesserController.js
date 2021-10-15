@@ -1,4 +1,4 @@
-const { insertEventLog,insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
+const { insertEventLog,insertFailedEventLog,insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
 const {publishNewestEvent} = require('../mqtt/mqtt')
@@ -23,6 +23,8 @@ exports.saveEvent = async (req, res, next) => {
         result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp);
     } catch (ex) {
         logger.error("insert ES fail", ex)
+        logger.error("eventData:",eventData)
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp);
         res.status(500).json({
             status: 500,
             success: false,

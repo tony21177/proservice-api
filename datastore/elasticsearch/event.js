@@ -19,6 +19,20 @@ const insertEventLog = async (month, day, data,indexTimestamp) => {
 }
 exports.insertEventLog = insertEventLog
 
+const insertFailedEventLog = async (month, day, data,indexTimestamp) => {
+  data.indexTimestamp = indexTimestamp;
+  const response = await esClient.index({
+    id:uuidv4(),
+    index: "failed_event_" + month + "_" + day,
+    op_type: 'create',
+    refresh: 'true',
+    body: data,
+    pipeline: "copy_id_to_eventId"
+  })
+  return response
+}
+exports.insertFailedEventLog = insertFailedEventLog
+
 const insertRawEventLog = async (month, day, data) => {
   const response = await esClient.index({
     index: "raw_xml_" + "event_" + month + "_" + day,
