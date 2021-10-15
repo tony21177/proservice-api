@@ -1,10 +1,10 @@
-const { insertEventLog,insertFailedEventLog,insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
+const { insertEventLog, insertFailedEventLog, insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
-const {publishNewestEvent} = require('../mqtt/mqtt')
-const {getAllFcmTokens} = require('../datastore/postgres/user_fcm')
-const {publicLatestEvent,publicLatestEventToDevices} = require('../firebase/fcm')
-const {logger} = require('../logger')
+const { publishNewestEvent } = require('../mqtt/mqtt')
+const { getAllFcmTokens } = require('../datastore/postgres/user_fcm')
+const { publicLatestEvent, publicLatestEventToDevices } = require('../firebase/fcm')
+const { logger } = require('../logger')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
 dayjs.extend(utc)
@@ -18,14 +18,14 @@ exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
     let todayTW = dayjs();
     let result = ""
-    let location = req.location===undefined?"cmhu":req.location
+    let location = req.location === undefined ? "cmhu" : req.location
     const indexTimestamp = new Date().getTime();
     try {
-        result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp,location);
+        result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
     } catch (ex) {
         logger.error("insert ES fail", ex)
-        logger.error("eventData:",JSON.stringify(eventData))
-        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp,location);
+        logger.error("eventData:", JSON.stringify(eventData))
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
         res.status(500).json({
             status: 500,
             success: false,
@@ -35,11 +35,11 @@ exports.saveEvent = async (req, res, next) => {
     }
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
-    logger.info("docId:",docId);
-    publishNewestEvent(docId,indexTimestamp);
-    publicLatestEvent(docId,indexTimestamp);
+    logger.info("docId:", docId);
+    publishNewestEvent(docId, indexTimestamp);
+    publicLatestEvent(docId, indexTimestamp);
     const tokenArray = await getAllFcmTokens();
-    publicLatestEventToDevices(docId,indexTimestamp,tokenArray)
+    publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
 
     res.status(200).json({
         status: 200,
@@ -85,7 +85,12 @@ exports.saveRawEvent = async (req, res, next) => {
     }
     // add Detail
     try {
-        const text = result['IAMessage']['Body']['Data']['#text'].replace(/\t/g, '').replace(/\n/g, '')
+        let text;
+        if (!result['IAMessage'] || !result['IAMessage']['Body'] || !result['IAMessage']['Body']['Data'] || !result['IAMessage']['Body']['Data']['#text']) {
+            text = result;
+        } else {
+            text = result['IAMessage']['Body']['Data']['#text'].replace(/\t/g, '').replace(/\n/g, '')
+        }
         const rootText = "<root>" + text + "</root>"
         let infoObjecty = await xml2js.parseStringPromise(rootText, parseOption);
         result['Detail'] = { ['Info']: infoObjecty.root }
@@ -105,8 +110,8 @@ exports.saveRawEvent = async (req, res, next) => {
     // insert to ES
     try {
         let todayTW = dayjs();
-        let location = req.location===undefined?"CMUH":req.location
-        result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result,location);
+        let location = req.location === undefined ? "CMUH" : req.location
+        result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result, location);
     } catch (err) {
         logger.error("insert into ES error:", err)
         res.status(500).json({
@@ -134,10 +139,10 @@ exports.syncEvents = async (req, res, next) => {
     const indexTimestamp = req.body.indexTimestamp;
     let data;
     try {
-        data = await syncEvents(size,lastId,indexTimestamp)
+        data = await syncEvents(size, lastId, indexTimestamp)
     } catch (error) {
-        logger.error("syncEvents error:",error)
-        if (error.toString()=="lastId and indexTimestamp is required") {
+        logger.error("syncEvents error:", error)
+        if (error.toString() == "lastId and indexTimestamp is required") {
             res.status(400).json({
                 status: 400,
                 success: false,
@@ -170,8 +175,8 @@ exports.scrollEvents = async (req, res, next) => {
     try {
         data = await scrollEvents(from, size, scrollId)
     } catch (error) {
-        logger.info("scrollEvents error:",error)
-        if (typeof error.meta!='undefined'&&error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {
+        logger.info("scrollEvents error:", error)
+        if (typeof error.meta != 'undefined' && error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {
             res.status(400).json({
                 status: 400,
                 success: false,
