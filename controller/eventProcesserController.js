@@ -18,7 +18,7 @@ exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
     let todayTW = dayjs();
     let result = ""
-    let location = req.location===undefined?"CMUH":req.location
+    let location = req.location===undefined?"cmhu":req.location
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData,indexTimestamp,location);
