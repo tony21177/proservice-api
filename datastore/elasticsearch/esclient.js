@@ -33,6 +33,12 @@ const pipelineContent = {
         "field": "Detail.Info.FirstOccurrence",
         "if": "ctx?.Detail?.Info?.FirstOccurrence == 'Unknown'"
       }
+    }, {
+      "remove": {
+        "description": "Drop FirstOccurrence when Unknown",
+        "field": "IAMessage.Detail.Info.FirstOccurrence",
+        "if": "ctx?.IAMessage?.Detail?.Info?.FirstOccurrence == 'Unknown'"
+      }
     }
   ]
 }
@@ -49,7 +55,7 @@ const addPipelineForCopyId = async function () {
   } catch (error) {
     logger.error("addPipelineForCopyId error:", error)
   }
-  logger.debug("add pipeline result:", result)
+  logger.info("add pipeline result:", result)
 }
 
 const putEventIndexMappingTemplate = async () => {
