@@ -161,7 +161,7 @@ const parseForVerbose = events => {
   events.forEach((event,index,eventArray) => {
     if (event['IAMessage'] && event['IAMessage']['Detail'] && event['IAMessage']['Detail']['Info']) {
       const Terse = event['IAMessage']['Detail']['Info']['Terse']
-      if (Terse == 'RV Supply is low' || Terse == 'Aspiration Monitor detected possible obstruction' || Terse == 'Run completed') {
+      if (Terse == 'RV Supply is low' || Terse == 'Aspiration Monitor detected possible obstruction' || Terse == 'Run completed'|| Terse == 'System is not ready to aspirate samples from the track') {
         parseVerboseForAllLine(event)
       } else {
         parseVerboseExcludeFirstLine(event)
