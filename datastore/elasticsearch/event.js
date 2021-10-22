@@ -2,14 +2,14 @@ const { esClient } = require('./esclient')
 const util = require('util');
 const { config } = require('../../config/env');
 const { v4: uuidv4 } = require('uuid');
-const {logger} = require('../../logger')
+const { logger } = require('../../logger')
 
 
-const insertEventLog = async (month, day, data,indexTimestamp,location) => {
+const insertEventLog = async (month, day, data, indexTimestamp, location) => {
   data.indexTimestamp = indexTimestamp;
   const response = await esClient.index({
-    id:uuidv4(),
-    index: "event_" +location+"_"+ month + "_" + day,
+    id: uuidv4(),
+    index: "event_" + location + "_" + month + "_" + day,
     op_type: 'create',
     refresh: 'true',
     body: data,
@@ -19,11 +19,11 @@ const insertEventLog = async (month, day, data,indexTimestamp,location) => {
 }
 exports.insertEventLog = insertEventLog
 
-const insertFailedEventLog = async (month, day, data,indexTimestamp,location) => {
+const insertFailedEventLog = async (month, day, data, indexTimestamp, location) => {
   data.indexTimestamp = indexTimestamp;
   const response = await esClient.index({
-    id:uuidv4(),
-    index: "failed_event_" +location+"_"+ month + "_" + day,
+    id: uuidv4(),
+    index: "failed_event_" + location + "_" + month + "_" + day,
     op_type: 'create',
     refresh: 'true',
     body: data,
@@ -33,9 +33,9 @@ const insertFailedEventLog = async (month, day, data,indexTimestamp,location) =>
 }
 exports.insertFailedEventLog = insertFailedEventLog
 
-const insertRawEventLog = async (month, day, data,location) => {
+const insertRawEventLog = async (month, day, data, location) => {
   const response = await esClient.index({
-    index: "raw_xml_" + "event_" +location+"_"+ month + "_" + day,
+    index: "raw_xml_" + "event_" + location + "_" + month + "_" + day,
     op_type: 'create',
     refresh: 'true',
     body: data,
@@ -45,9 +45,9 @@ const insertRawEventLog = async (month, day, data,location) => {
 }
 exports.insertRawEventLog = insertRawEventLog
 
-const syncEvents = async(size,lastId,indexTimestamp) =>{
+const syncEvents = async (size, lastId, indexTimestamp) => {
   let result = getEmptyResult();
-  if(!lastId || !indexTimestamp || isNaN(indexTimestamp)){
+  if (!lastId || !indexTimestamp || isNaN(indexTimestamp)) {
     throw new Error("lastId and indexTimestamp is required");
   }
   if (!Number.isInteger(size)) {
@@ -55,9 +55,9 @@ const syncEvents = async(size,lastId,indexTimestamp) =>{
   }
   let searchBody = {
     index: 'event*',
-    sort: ['indexTimestamp:asc','eventId.keyword:asc'],
+    sort: ['indexTimestamp:asc', 'eventId.keyword:asc'],
     size: size,
-    body:{search_after:[indexTimestamp,lastId]}
+    body: { search_after: [indexTimestamp, lastId] }
   }
   result = await esClient.search(searchBody, {
     ignore: [404],
@@ -77,7 +77,7 @@ exports.syncEvents = syncEvents
 const scrollEvents = async (from, size, scrollId) => {
   // first 
   let result = getEmptyResult();
-  if (typeof scrollId == 'undefined'||!scrollId || scrollId.trim() == '') {
+  if (typeof scrollId == 'undefined' || !scrollId || scrollId.trim() == '') {
     if (!Number.isInteger(size)) {
       size = 10;
     }
@@ -86,7 +86,7 @@ const scrollEvents = async (from, size, scrollId) => {
     }
     let searchBody = {
       index: 'event*',
-      sort: ['indexTimestamp:desc','eventId.keyword:desc'],
+      sort: ['indexTimestamp:desc', 'eventId.keyword:desc'],
       from: from,
       size: size,
       scroll: '10m',
@@ -153,17 +153,21 @@ const clearScroll = async (scrollId) => {
       logger.debug(`statusCode: ${res.status}`)
     })
     .catch(error => {
-      logger.error("delete scroll error:",error)
+      logger.error("delete scroll error:", error)
     })
 }
 
 const parseForVerbose = events => {
-  events.forEach(event => {
-    const Terse = event['IAMessage']['Detail']['Info']['Terse']
-    if (Terse == 'RV Supply is low' || Terse == 'Aspiration Monitor detected possible obstruction' || Terse == 'Run completed') {
-      parseVerboseForAllLine(event)
-    } else {
-      parseVerboseExcludeFirstLine(event)
+  events.forEach((event,index,eventArray) => {
+    if (event['IAMessage'] && event['IAMessage']['Detail'] && event['IAMessage']['Detail']['Info']) {
+      const Terse = event['IAMessage']['Detail']['Info']['Terse']
+      if (Terse == 'RV Supply is low' || Terse == 'Aspiration Monitor detected possible obstruction' || Terse == 'Run completed') {
+        parseVerboseForAllLine(event)
+      } else {
+        parseVerboseExcludeFirstLine(event)
+      }
+    }else{
+      eventArray.splice(index, 1);
     }
   })
 }
@@ -176,7 +180,7 @@ const parseVerboseForAllLine = event => {
   }
   const parsedArray = verbose.split('\n')
   const parsedVerbose = {};
-  parseVerboseKeyValue(parsedArray,parsedVerbose)
+  parseVerboseKeyValue(parsedArray, parsedVerbose)
   event['IAMessage']['Detail']['Info']['verboseDescription'] = event['IAMessage']['Detail']['Info']['Terse']
   event['IAMessage']['Detail']['Info']['parsedVerbose'] = parsedVerbose
 
@@ -193,41 +197,41 @@ const parseVerboseExcludeFirstLine = event => {
   if (body) {
     const parsedArray = body.split('\n')
     const parsedVerbose = {};
-    parseVerboseKeyValue(parsedArray,parsedVerbose)
+    parseVerboseKeyValue(parsedArray, parsedVerbose)
     event['IAMessage']['Detail']['Info']['parsedVerbose'] = parsedVerbose
   } else {
     event['IAMessage']['Detail']['Info']['parsedVerbose'] = ''
   }
 }
 
-const parseVerboseKeyValue = (rawKeyValueArray,parsedVerbose) =>{
+const parseVerboseKeyValue = (rawKeyValueArray, parsedVerbose) => {
   let key;
   let value;
   rawKeyValueArray.forEach(pair => {
-    if(pair.includes("Backup")){
+    if (pair.includes("Backup")) {
       //key = pair.split(/on(.+)/s)[0]
       //value = pair.split(/on(.+)/s)[1]
       key = pair.split(" ")
-      key = pair.split(" ")[0]+pair.split(" ")[1]+pair.split(" ")[2]
-      value = pair.split(" ")[3]+" "+pair.split(" ")[4]+" "+pair.split(" ")[5]
-    }else{
+      key = pair.split(" ")[0] + pair.split(" ")[1] + pair.split(" ")[2]
+      value = pair.split(" ")[3] + " " + pair.split(" ")[4] + " " + pair.split(" ")[5]
+    } else {
       key = pair.split(/:(.+)/s)[0]
       key = key.replace(/ /g, '')
       value = pair.split(/:(.+)/s)[1]
     }
 
-    
-    
-    if(pair||pair.trim()!=""){
-      if(value){
+
+
+    if (pair || pair.trim() != "") {
+      if (value) {
         value = value.replace(/\t/g, '');
-        if(!key.includes("Device")&&!key.includes("DeviceError")&&!key.includes("EventTime")&&!key.includes("FileRevision")&&!key.includes("Backup")){
+        if (!key.includes("Device") && !key.includes("DeviceError") && !key.includes("EventTime") && !key.includes("FileRevision") && !key.includes("Backup")) {
           value = value.replace(/ /g, '')
         }
       }
-      if(value=="{NULL}") value=""
+      if (value == "{NULL}") value = ""
       parsedVerbose[key] = value
-    }          
+    }
   })
 }
 
@@ -241,11 +245,11 @@ const transformDateTime = events => {
       const datetime = new Date(event.IAMessage.Detail.Info.TimeOfEvent);
       event.IAMessage.Detail.Info.TimeOfEvent = datetime.getTime();
     }
-    if (event.IAMessage.Header['@TimeStamp'] && event.IAMessage.Header['@TimeStamp'].trim() != ""){
+    if (event.IAMessage.Header['@TimeStamp'] && event.IAMessage.Header['@TimeStamp'].trim() != "") {
       const datetime = new Date(event.IAMessage.Header['@TimeStamp']);
       event.IAMessage.Header['@TimeStamp'] = datetime.getTime();
     }
-    if (event.Timestamp && event.Timestamp.trim() != ""){
+    if (event.Timestamp && event.Timestamp.trim() != "") {
       const datetime = new Date(event.Timestamp);
       event.Timestamp = datetime.getTime();
     }
