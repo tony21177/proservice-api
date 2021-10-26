@@ -117,6 +117,7 @@ services:
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
       - /etc/letsencrypt:/etc/letsencrypt
+      - ./publickey:/etc/publickey
     networks:
       - opensearch-net  
     depends_on:
