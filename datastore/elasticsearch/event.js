@@ -237,6 +237,7 @@ const parseVerboseKeyValue = (rawKeyValueArray, parsedVerbose) => {
 
 const transformDateTime = events => {
   events.forEach(event => {
+    if(!event.IAMessage||!event.IAMessage.Detail||!event.IAMessage.Detail.Info) return
     if (event.IAMessage.Detail.Info.FirstOccurrence && event.IAMessage.Detail.Info.FirstOccurrence.trim() != "") {
       const datetime = new Date(event.IAMessage.Detail.Info.FirstOccurrence);
       event.IAMessage.Detail.Info.FirstOccurrence = datetime.getTime();
@@ -245,6 +246,8 @@ const transformDateTime = events => {
       const datetime = new Date(event.IAMessage.Detail.Info.TimeOfEvent);
       event.IAMessage.Detail.Info.TimeOfEvent = datetime.getTime();
     }
+
+    if(!event.IAMessage.Header) return
     if (event.IAMessage.Header['@TimeStamp'] && event.IAMessage.Header['@TimeStamp'].trim() != "") {
       const datetime = new Date(event.IAMessage.Header['@TimeStamp']);
       event.IAMessage.Header['@TimeStamp'] = datetime.getTime();
