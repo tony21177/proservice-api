@@ -76,6 +76,7 @@ exports.saveRawEvent = async (req, res, next) => {
         result['isRawISO88591'] = true
     } catch (err) {
         logger.error("parse xml error:", err);
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
         res.status(500).json({
             status: 500,
             success: false,
@@ -99,6 +100,7 @@ exports.saveRawEvent = async (req, res, next) => {
         }
     } catch (err) {
         logger.error("parse Detail error:", err)
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
         res.status(500).json({
             status: 500,
             success: false,

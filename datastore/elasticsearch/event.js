@@ -4,6 +4,31 @@ const { config } = require('../../config/env');
 const { v4: uuidv4 } = require('uuid');
 const { logger } = require('../../logger')
 
+exports.termAggregate = async(field,from,to)=>{
+  const result = await esClient.search({
+    index: 'event*',
+    body: {
+      "size":0,
+      "query": {
+        "range": {
+          "IAMessage.Detail.Info.TimeOfEvent": {
+            "gte": from,
+            "lt": to,
+            "format":"yyyy-MM-dd"
+          }
+        }
+      },
+      "aggs": {
+        "Category": {
+          "terms": {
+            "field": field+".keyword"
+          }
+        }
+      }
+    }
+  })
+}
+
 
 const insertEventLog = async (month, day, data, indexTimestamp, location) => {
   data.indexTimestamp = indexTimestamp;
