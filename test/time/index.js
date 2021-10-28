@@ -8,4 +8,6 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault("Asia/Taipei")
 let todayTW = dayjs();
-logger.info("today in TW:",todayTW)
+console.log("today in TW:",todayTW)
+console.log("month:",todayTW.month()+1)
+console.log("day:",todayTW.date())

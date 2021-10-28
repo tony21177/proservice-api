@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }))
 // app.use(cookieParser())
 app.use('/', routes);
 
-
+console.log("server time zone:",process.env.TZ)
 
 module.exports = app
 
