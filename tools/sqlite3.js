@@ -12,11 +12,15 @@ let logDb = new sqlite3.Database('./tools/DataLog.db', sqlite3.OPEN_READWRITE, (
 
 
 logDb.serialize(() => {
-    logDb.each(`select raw from logs`, async (err, row) => {
+    logDb.each(`SELECT time,raw from logs where json = "Error in parse Json String"`, async (err, row) => {
         if (err) {
             logger.error("sql error:",err.message);
         }
-        let raw = row.raw;
+        let time = row.time
+        let timeStamp = new Date(time).getTime()
+        let month =time.split('-')[1]
+        let day = time.split('-')[2]
+        let raw = row.raw
         if (raw != 'Raw String') {
             const parseOption = {
                 explicitArray: false,
@@ -47,7 +51,7 @@ logDb.serialize(() => {
             }
 
             try {
-                const response = await insertEventLog(9, 26, result);
+                const response = await insertEventLog(month, day, result,timeStamp,"cmuh");
             } catch (err) {
                 logger.error("insert es error:",err)
             }
