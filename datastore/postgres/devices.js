@@ -28,3 +28,4 @@ exports.insertOrUpdateDeviceByMac = async (loc,ip,hostname,mac) => {
 
     return result
 }
+

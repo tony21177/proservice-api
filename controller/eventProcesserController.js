@@ -16,9 +16,11 @@ dayjs.tz.setDefault("Asia/Taipei")
 
 exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
+    logger.debug("request body:"+JSON.stringify(eventData))
     let todayTW = dayjs();
     let result = ""
-    let location = req.location === undefined ? "cmhu" : req.location
+    let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
+    logger.info("event location:%s",location)
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
@@ -112,7 +114,7 @@ exports.saveRawEvent = async (req, res, next) => {
     // insert to ES
     try {
         let todayTW = dayjs();
-        let location = req.location === undefined ? "cmhu" : req.location
+        let location = req.location === undefined ? "cmuh" : req.location
         result = await insertRawEventLog(todayTW.month() + 1, todayTW.date(), result, location);
     } catch (err) {
         logger.error("insert into ES error:", err)

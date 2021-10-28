@@ -1,4 +1,4 @@
-const path = require('path'); 
+
 
 exports.config = {
     esUsername : process.env['opensearch_username'],
@@ -8,5 +8,6 @@ exports.config = {
     mqttUrl: process.env['mqtt_url'],
     mqttClientId: process.env['clientId'],
     mqttUsername: process.env['mqtt_username'],
-    mqttPassword: process.env['mqtt_password']
+    mqttPassword: process.env['mqtt_password'],
+    tokenEnv:process.env['TOKEN_ENV']
 }

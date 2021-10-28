@@ -114,6 +114,7 @@ services:
       PGPASSWORD: ${PGPASSWORD}
       PGDATABASE: ${PGDATABASE}
       PGPORT: ${PGPORT}
+      TOKEN_ENV: ${TOKEN_ENV}
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
       - /etc/letsencrypt:/etc/letsencrypt

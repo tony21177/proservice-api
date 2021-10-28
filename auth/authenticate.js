@@ -8,6 +8,7 @@ const {getPublicKeyByMac,insertOrUpdateDeviceByMac} = require('../datastore/post
 const jwt = require('jsonwebtoken')
 const base64url = require('base64url');
 const fs = require('fs')
+const { config } = require('../config/env')
 
 exports.authUserEmailAndPass = async(email,password)=>{
     logger.info("authUserEmailAndPass..")
@@ -106,12 +107,27 @@ exports.tokenProtectForDevice = async (req, res, next) => {
         let base64urlPayload = token.split('.')[1];
         let decodedPayload = JSON.parse(base64url.decode(base64urlPayload, 'utf8'))
         let mac = decodedPayload.mac
-        let publicKey = fs.readFileSync('/etc/publickey/'+mac+".pem")
+        let publicKey;
+        if(config.tokenEnv == "develope"){
+            publicKey = fs.readFileSync('/etc/publickey/develope.pem')
+        }else{
+            if(!fs.existsSync("/etc/publickey/"+mac+".pem")){
+                res.status(401).json({
+                    success: false,
+                    data: {
+                        msg: "the device is not valid(mac="+mac+")"
+                    },
+                })
+            }
+            publicKey = fs.readFileSync("/etc/publickey/"+mac+".pem")
+        }
+
         let decoded = ""
         try{
             decoded = jwt.verify(token,publicKey,{ algorithms: ['RS256']})
             const updatedResult = await insertOrUpdateDeviceByMac(decoded.loc,decoded.ip,decoded.hostname,decoded.mac)
             logger.info("updatedResult:",updatedResult.rowCount)
+            req.location = decoded.loc;
             next()
         }catch(error){
             logger.error("jwt verificaton error:",error)
