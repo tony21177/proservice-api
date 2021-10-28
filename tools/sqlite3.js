@@ -1,7 +1,8 @@
-const { insertEventLog, scrollEvents } = require('../datastore/elasticsearch/event')
+const { insertEventLog } = require('../datastore/elasticsearch/event')
 var sqlite3 = require('sqlite3').verbose();
 const xml2js = require('xml2js');
-const {logger} = require('../logger')
+const {logger} = require('../logger');
+const e = require('express');
 
 let logDb = new sqlite3.Database('./tools/DataLog.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
@@ -10,9 +11,10 @@ let logDb = new sqlite3.Database('./tools/DataLog.db', sqlite3.OPEN_READWRITE, (
     logger.info('Connected to the my database.');
 });
 
-
+let errorCount = 0;
 logDb.serialize(() => {
     logDb.each(`SELECT time,raw from logs where json = "Error in parse Json String"`, async (err, row) => {
+        if(errorCount>3) return
         if (err) {
             logger.error("sql error:",err.message);
         }
@@ -34,7 +36,10 @@ logDb.serialize(() => {
             try {
                 result = await xml2js.parseStringPromise(raw.replace("\ufeff", ""), parseOption);
             } catch (err) {
+                errorCount++;
                 logger.error("parse Body  error:", err)
+                console.log(raw.replace("\ufeff", ""))
+                console.log("************errorCount:%d",errorCount)
                 return
             }
             // add Detail
@@ -60,3 +65,4 @@ logDb.serialize(() => {
 
     });
 })
+

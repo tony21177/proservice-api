@@ -74,9 +74,10 @@ const putEventIndexMappingTemplate = async () => {
   logger.info("putEventIndexMappingTemplate result:", result)
 }
 
-
-addPipelineForCopyId()
-putEventIndexMappingTemplate()
+if(process.env.NODE_ENV != "develope"){
+  addPipelineForCopyId()
+  putEventIndexMappingTemplate()
+}
 
 exports.esClient = client
 exports.addPipelineForCopyId = addPipelineForCopyId
