@@ -9,5 +9,6 @@ exports.config = {
     mqttClientId: process.env['clientId'],
     mqttUsername: process.env['mqtt_username'],
     mqttPassword: process.env['mqtt_password'],
-    tokenEnv:process.env['TOKEN_ENV']
+    tokenEnv:process.env['TOKEN_ENV'],
+    eventIndex:process.env['EVENT_INDEX']
 }

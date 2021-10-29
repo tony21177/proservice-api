@@ -4,6 +4,7 @@ const eventProcesser = require('../controller/eventProcesserController')
 const authService = require('../controller/authController')
 const {tokenProtect,tokenProtectForDevice} = require('../auth/authenticate')
 const userService = require('../controller/userController')
+const statisticService = require('../controller/statisticController')
 const {logger} = require('../logger')
 
 // restful api for collecting event without authentication
@@ -24,6 +25,11 @@ router.get("/api/v1/auth/login/token",authService.verifyToken);
 
 // fcm token
 router.post("/api/v1/fcm/token_upload",tokenProtect,userService.bindFcmToken)
+
+// statistic
+router.post("/api/v1/statistic/aggregation",tokenProtect,statisticService.fieldAggregationOfTimeRange)
+router.post("/api/v1/statistic/dateHistogram",tokenProtect,statisticService.dateHistogramOfCounts)
+router.post("/api/v1/statistic/dateHistogram/aggregation",tokenProtect,statisticService.dateHistogramOfField)
 
 
 module.exports = router
