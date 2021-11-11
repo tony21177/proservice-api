@@ -1,4 +1,4 @@
-const { insertEventLog, insertFailedEventLog, insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
+const { insertEventLog,insertNotEventLog ,insertFailedEventLog, insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
 const { publishNewestEvent } = require('../mqtt/mqtt')
@@ -12,7 +12,41 @@ dayjs.extend(timezone)
 dayjs.tz.setDefault("Asia/Taipei")
 
 
+exports.saveNotEvent = async (req, res, next) => {
+    let eventData = req.body;
+    logger.debug("request body:"+JSON.stringify(eventData))
+    let todayTW = dayjs();
+    let result = ""
+    let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
+    logger.info("event location:%s",location)
+    const indexTimestamp = new Date().getTime();
+    try {
+        result = await insertNotEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
+    } catch (ex) {
+        logger.error("insert ES fail", ex)
+        logger.error("eventData:", JSON.stringify(eventData))
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
+        res.status(500).json({
+            status: 500,
+            success: false,
+            data: ex
+        })
+        return
+    }
+    // publish newest event doc id to mqtt
+    const docId = result.body['_id']
+    logger.info("docId:", docId);
+    publishNewestEvent(docId, indexTimestamp);
+    publicLatestEvent(docId, indexTimestamp);
+    const tokenArray = await getAllFcmTokens();
+    publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
 
+    res.status(200).json({
+        status: 200,
+        success: true,
+        data: null
+    })
+}
 
 exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
