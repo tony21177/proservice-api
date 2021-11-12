@@ -18,13 +18,13 @@ exports.saveNotEvent = async (req, res, next) => {
     let todayTW = dayjs();
     let result = ""
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
-    logger.info("event location:%s",location)
+    logger.info("[saveNotEvent] event location:%s",location)
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertNotEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
     } catch (ex) {
-        logger.error("insert ES fail", ex)
-        logger.error("eventData:", JSON.stringify(eventData))
+        logger.error("[saveNotEvent]insert ES fail", ex)
+        logger.error("[saveNotEvent] eventData:", JSON.stringify(eventData))
         insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
         res.status(500).json({
             status: 500,
@@ -36,10 +36,10 @@ exports.saveNotEvent = async (req, res, next) => {
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
     logger.info("docId:", docId);
-    publishNewestEvent(docId, indexTimestamp);
-    publicLatestEvent(docId, indexTimestamp);
-    const tokenArray = await getAllFcmTokens();
-    publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
+    // publishNewestEvent(docId, indexTimestamp);
+    // publicLatestEvent(docId, indexTimestamp);
+    // const tokenArray = await getAllFcmTokens();
+    // publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
 
     res.status(200).json({
         status: 200,

@@ -117,6 +117,7 @@ services:
       TOKEN_ENV: ${TOKEN_ENV}
       TZ: ${TZ}
       EVENT_INDEX: ${EVENT_INDEX}
+      DOMAIN: ${DOMAIN}
     volumes: 
       - ./certs/gen/root-ca.pem:${ca_path}  
       - /etc/letsencrypt:/etc/letsencrypt

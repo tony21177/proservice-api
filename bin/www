@@ -18,9 +18,9 @@ if (process.env.NODE_ENV != "develope") {
 
 
   // Certificate
-  const privateKey = fs.readFileSync('/etc/letsencrypt/live/apiproservice.ddns.net/privkey.pem', 'utf8');
-  const certificate = fs.readFileSync('/etc/letsencrypt/live/apiproservice.ddns.net/cert.pem', 'utf8');
-  const ca = fs.readFileSync('/etc/letsencrypt/live/apiproservice.ddns.net/chain.pem', 'utf8');
+  const privateKey = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/privkey.pem', 'utf8');
+  const certificate = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/cert.pem', 'utf8');
+  const ca = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/chain.pem', 'utf8');
   const credentials = {
     key: privateKey,
     cert: certificate,
