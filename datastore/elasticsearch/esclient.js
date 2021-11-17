@@ -2,6 +2,7 @@ const { Client } = require('@elastic/elasticsearch')
 const { config } = require('../../config/env')
 const { logger } = require('../../logger')
 const { eventIndexMapping } = require('../elasticsearch/eventIndexMapping')
+const {notEventIndexMapping} = require('../elasticsearch/notEventIndexMapping')
 
 const client = new Client({
   node: config.es_host,
@@ -58,6 +59,7 @@ const addPipelineForCopyId = async function () {
   logger.info("add pipeline result:", result)
 }
 
+
 const putEventIndexMappingTemplate = async () => {
   let result = ""
   try {
@@ -74,9 +76,26 @@ const putEventIndexMappingTemplate = async () => {
   logger.info("putEventIndexMappingTemplate result:", result)
 }
 
+const putNotEventIndexMappingTemplate = async () => {
+  let result = ""
+  try {
+    result = await client.indices.putTemplate({
+      name: 'not_event_template',
+      body: {
+        "index_patterns": ["not_event*"],
+        "mappings": notEventIndexMapping
+      }
+    })
+  } catch (error) {
+    logger.error("putNotEventIndexMappingTemplate error:", error)
+  }
+  logger.info("putNotEventIndexMappingTemplate result:", result)
+}
+
 if(process.env.NODE_ENV != "develope"){
   addPipelineForCopyId()
   putEventIndexMappingTemplate()
+  putNotEventIndexMappingTemplate()
 }
 
 exports.esClient = client
