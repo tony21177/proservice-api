@@ -925,7 +925,8 @@ exports.notEventIndexMapping = {
                   }
                 },
                 "Timestamp" : {
-                  "type" : "date"
+                  "type" : "date",
+                  "ignore_malformed" : true
                 },
                 "Tube" : {
                   "type" : "text",
@@ -1141,7 +1142,8 @@ exports.notEventIndexMapping = {
               }
             },
             "@TimeStamp" : {
-              "type" : "date"
+              "type" : "date",
+              "ignore_malformed" : true
             }
           }
         }
