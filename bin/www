@@ -14,25 +14,26 @@ const https = require('https')
 const port = normalizePort(process.env.PORT || '3000')
 app.set('port', port)
 
-if (process.env.NODE_ENV != "develope") {
+// https由nginx處理
+// if (process.env.NODE_ENV != "develope") {
 
 
-  // Certificate
-  const privateKey = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/privkey.pem', 'utf8');
-  const certificate = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/cert.pem', 'utf8');
-  const ca = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/chain.pem', 'utf8');
-  const credentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca
-  };
+//   // Certificate
+//   const privateKey = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/privkey.pem', 'utf8');
+//   const certificate = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/cert.pem', 'utf8');
+//   const ca = fs.readFileSync('/etc/letsencrypt/live/'+process.env['DOMAIN']+'/chain.pem', 'utf8');
+//   const credentials = {
+//     key: privateKey,
+//     cert: certificate,
+//     ca: ca
+//   };
 
-  const httpsServer = https.createServer(credentials, app)
-  httpsServer.listen(443)
-  httpsServer.on('error', onError)
-  httpsServer.on('listening', onListening)
+//   const httpsServer = https.createServer(credentials, app)
+//   httpsServer.listen(443)
+//   httpsServer.on('error', onError)
+//   httpsServer.on('listening', onListening)
 
-}
+// }
 
 
 
