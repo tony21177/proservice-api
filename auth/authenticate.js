@@ -11,7 +11,7 @@ const fs = require('fs')
 const { config } = require('../config/env')
 
 exports.authUserEmailAndPass = async(email,password)=>{
-    logger.info("authUserEmailAndPass..")
+    logger.debug("authUserEmailAndPass..")
     try{
         const auth = getAuth()
         const userCredential = await signInWithEmailAndPassword(auth,email,password)

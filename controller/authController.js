@@ -21,7 +21,7 @@ exports.login = async (req, res, next)=>{
             },
         })
     }catch(error){
-        logger.info("auth fail:",error)
+        logger.error("auth fail:",error)
         res.status(400).json({
             success: false,
             data: {

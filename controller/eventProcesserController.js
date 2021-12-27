@@ -18,7 +18,7 @@ exports.saveNotEvent = async (req, res, next) => {
     let todayTW = dayjs();
     let result = ""
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
-    logger.info("[saveNotEvent] event location:%s",location)
+    logger.debug("[saveNotEvent] event location:%s",location)
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertNotEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
@@ -35,7 +35,7 @@ exports.saveNotEvent = async (req, res, next) => {
     }
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
-    logger.info("docId:", docId);
+    logger.debug("docId:", docId);
     // publishNewestEvent(docId, indexTimestamp);
     // publicLatestEvent(docId, indexTimestamp);
     // const tokenArray = await getAllFcmTokens();
@@ -54,7 +54,7 @@ exports.saveEvent = async (req, res, next) => {
     let todayTW = dayjs();
     let result = ""
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
-    logger.info("event location:%s",location)
+    logger.debug("event location:%s",location)
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
@@ -71,7 +71,7 @@ exports.saveEvent = async (req, res, next) => {
     }
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
-    logger.info("docId:", docId);
+    logger.debug("docId:", docId);
     publishNewestEvent(docId, indexTimestamp);
     publicLatestEvent(docId, indexTimestamp);
     const tokenArray = await getAllFcmTokens();
@@ -214,7 +214,7 @@ exports.scrollEvents = async (req, res, next) => {
     try {
         data = await scrollEvents(from, size, scrollId)
     } catch (error) {
-        logger.info("scrollEvents error:", error)
+        logger.error("scrollEvents error:", error)
         if (typeof error.meta != 'undefined' && error.meta.body.error.root_cause[0] && error.meta.body.error.root_cause[0].type == 'search_context_missing_exception') {
             res.status(400).json({
                 status: 400,
