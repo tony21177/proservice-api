@@ -10,6 +10,7 @@ const {logger} = require('../logger')
 // restful api for collecting event without authentication
 router.post("/api/v1/event",eventProcesser.saveEvent);
 router.post("/api/v1/others",eventProcesser.saveNotEvent);
+router.post("/api/v1/auth/others",tokenProtectForDevice,eventProcesser.saveNotEvent);
 // restful api for collecting event with authentication
 router.post("/api/v1/auth/event",tokenProtectForDevice,eventProcesser.saveEvent);
 // restful api for scroll events list
@@ -17,7 +18,7 @@ router.post("/api/v1/event/list",tokenProtect,eventProcesser.scrollEvents)
 router.post("/api/v1/event/sync",tokenProtect,eventProcesser.syncEvents)
 
 // restful api for text/plain
-router.post("/api/v2/event",eventProcesser.saveRawEvent);
+router.post("/api/v2/event/raw",tokenProtect,eventProcesser.saveRawEvent);
 
 
 // auth

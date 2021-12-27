@@ -86,6 +86,7 @@ exports.saveEvent = async (req, res, next) => {
 
 exports.saveRawEvent = async (req, res, next) => {
     const rawBodyBuf = req.rawBody;
+    let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
     let xml;
     try {
         xml = rawBodyBuf.toString('latin1');
