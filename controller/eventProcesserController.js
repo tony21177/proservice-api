@@ -90,16 +90,20 @@ exports.saveEvent = async (req, res, next) => {
 }
 
 exports.saveRawEvent = async (req, res, next) => {
-    let result = "fail to parse";
+    let result = "fail to parse xml";
     const indexTimestamp = new Date().getTime();
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
     const rawBodyBuf = req.rawBody;
     
-    let xml;
+    let xml = "fail to parse xml";
     try {
-        xml = rawBodyBuf.toString('latin1');
+        if(xml){
+            xml = rawBodyBuf.toString('latin1');
+        }
     } catch (ex) {
         logger.error("toString fail", ex)
+        let todayTW = dayjs();
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), xml, indexTimestamp, location);
         res.status(200).json({
             status: 500,
             success: false,
