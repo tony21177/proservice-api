@@ -126,7 +126,7 @@ exports.saveRawEvent = async (req, res, next) => {
         logger.error("parse xml error:", err);
         let todayTW = dayjs();
         insertFailedEventLog(todayTW.month() + 1, todayTW.date(), result, indexTimestamp, location);
-        res.status(500).json({
+        res.status(200).json({
             status: 500,
             success: false,
             data: err
