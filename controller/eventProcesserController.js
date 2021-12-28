@@ -100,7 +100,7 @@ exports.saveRawEvent = async (req, res, next) => {
         xml = rawBodyBuf.toString('latin1');
     } catch (ex) {
         logger.error("toString fail", ex)
-        res.status(500).json({
+        res.status(200).json({
             status: 500,
             success: false,
             data: ex
