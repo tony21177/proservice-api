@@ -18,7 +18,7 @@ router.post("/api/v1/event/list",tokenProtect,eventProcesser.scrollEvents)
 router.post("/api/v1/event/sync",tokenProtect,eventProcesser.syncEvents)
 
 // restful api for text/plain
-router.post("/api/v2/auth/event/raw",tokenProtect,eventProcesser.saveRawEvent);
+router.post("/api/v2/auth/event/raw",tokenProtectForDevice,eventProcesser.saveRawEvent);
 
 
 // auth
