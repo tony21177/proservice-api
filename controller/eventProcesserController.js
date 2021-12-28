@@ -91,8 +91,10 @@ exports.saveEvent = async (req, res, next) => {
 
 exports.saveRawEvent = async (req, res, next) => {
     let result = "fail to parse";
-    const rawBodyBuf = req.rawBody;
+    const indexTimestamp = new Date().getTime();
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
+    const rawBodyBuf = req.rawBody;
+    
     let xml;
     try {
         xml = rawBodyBuf.toString('latin1');
