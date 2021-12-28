@@ -114,10 +114,13 @@ exports.saveRawEvent = async (req, res, next) => {
     let result;
     try {
         // parse Body
-        result = await xml2js.parseStringPromise(xml.replace("\ufeff", ""), parseOption);
+        if(xml){
+            result = await xml2js.parseStringPromise(xml.replace("\ufeff", ""), parseOption);
+        }
         result['isRawISO88591'] = true
     } catch (err) {
         logger.error("parse xml error:", err);
+        let todayTW = dayjs();
         insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
         res.status(500).json({
             status: 500,
