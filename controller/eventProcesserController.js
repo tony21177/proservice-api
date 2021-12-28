@@ -90,6 +90,7 @@ exports.saveEvent = async (req, res, next) => {
 }
 
 exports.saveRawEvent = async (req, res, next) => {
+    let result = "fail to parse";
     const rawBodyBuf = req.rawBody;
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
     let xml;
@@ -111,17 +112,18 @@ exports.saveRawEvent = async (req, res, next) => {
         attrNameProcessors: [function (name) { return '@' + name }]
     }
     //
-    let result;
     try {
         // parse Body
         if(xml){
             result = await xml2js.parseStringPromise(xml.replace("\ufeff", ""), parseOption);
+        }else{
+            result = ""
         }
         result['isRawISO88591'] = true
     } catch (err) {
         logger.error("parse xml error:", err);
         let todayTW = dayjs();
-        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), result, indexTimestamp, location);
         res.status(500).json({
             status: 500,
             success: false,
