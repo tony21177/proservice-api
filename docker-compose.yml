@@ -22,11 +22,6 @@ services:
         hard: 65536
     volumes:
       - opensearch-data1:/usr/share/opensearch/data
-      - ./certs/gen/root-ca.pem:/usr/share/opensearch/config/root-ca.pem
-      - ./certs/gen/node.pem:/usr/share/opensearch/config/node.pem
-      - ./certs/gen/node-key.pem:/usr/share/opensearch/config/node-key.pem
-      - ./certs/gen/admin.pem:/usr/share/opensearch/config/admin.pem
-      - ./certs/gen/admin-key.pem:/usr/share/opensearch/config/admin-key.pem
       - ./elk-config/custom-opensearch.yml:/usr/share/opensearch/config/opensearch.yml
       - ./elk-config/internal_users.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml
       - ./elk-config/roles_mapping.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/roles_mapping.yml
@@ -60,11 +55,6 @@ services:
         hard: 65536
     volumes:
       - opensearch-data2:/usr/share/opensearch/data
-      - ./certs/gen/root-ca.pem:/usr/share/opensearch/config/root-ca.pem
-      - ./certs/gen/node.pem:/usr/share/opensearch/config/node.pem
-      - ./certs/gen/node-key.pem:/usr/share/opensearch/config/node-key.pem
-      - ./certs/gen/admin.pem:/usr/share/opensearch/config/admin.pem
-      - ./certs/gen/admin-key.pem:/usr/share/opensearch/config/admin-key.pem
       - ./elk-config/custom-opensearch.yml:/usr/share/opensearch/config/opensearch.yml
       - ./elk-config/internal_users.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml
       - ./elk-config/roles_mapping.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/roles_mapping.yml
@@ -85,9 +75,6 @@ services:
       OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200"]' # must be a string with no spaces when specified as an environment variable
     volumes:
       - ./elk-config/custom-opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
-      - ./certs/gen/root-ca.pem:/usr/share/opensearch-dashboards/config/root-ca.pem
-      - ./certs/gen/kibana.pem:/usr/share/opensearch-dashboards/config/kibana.pem
-      - ./certs/gen/kibana-key.pem:/usr/share/opensearch-dashboards/config/kibana-key.pem
     networks:
       - opensearch-net
   middleware-api:
@@ -99,12 +86,6 @@ services:
     ports:
       - 80:80 
       # - 443:443
-    logging:
-      driver: gcplogs
-      # options:
-      #  gcp-project: lis-middleware       
-      #  labels: location
-        #  gcp-log-cmd: true 
     environment: 
       opensearch_username: ${opensearch_username}
       opensearch_password: ${opensearch_password}
@@ -132,43 +113,6 @@ services:
       - opensearch-node1
       - opensearch-node2  
       - database
-  # How to Tune Elastic Beats Performance: A Practical Example with Batch Size, Worker Count, and More
-  # https://www.elastic.co/blog/how-to-tune-elastic-beats-performance-a-practical-example-with-batch-size-worker-count-and-more?blade=tw&hulk=social
-  # filebeat:
-  #   image: docker.elastic.co/beats/filebeat-oss:7.10.2
-  #   restart: unless-stopped
-  #   # https://github.com/docker/swarmkit/issues/1951
-  #   hostname: "{{.Node.Hostname}}-filebeat"
-  #   # Need to override user so we can access the log files, and docker.sock
-  #   user: root
-  #   networks:
-  #     - opensearch-net 
-  #   volumes:
-  #     # for filebeat logs
-  #     - $PWD/filebeat/logs:/usr/share/filebeat/logs      
-  #     - $PWD/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml      
-  #     - filebeat:/usr/share/filebeat/data
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     # This is needed for filebeat to load container log path as specified in filebeat.yml
-  #     - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
-
-  #     # # This is needed for filebeat to load jenkins build log path as specified in filebeat.yml
-  #     # - /var/lib/docker/volumes/jenkins_home/_data/jobs/:/var/lib/docker/volumes/jenkins_home/_data/jobs/:ro
-
-  #     # This is needed for filebeat to load logs for system and auth modules
-  #     - /var/log/:/var/log/:ro
-  #     # This is needed for filebeat to load logs for auditd module. you might have to install audit system
-  #     # on ubuntu first (sudo apt-get install -y auditd audispd-plugins)
-  #     - /var/log/audit/:/var/log/audit/:ro
-  #   environment:
-  #     - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST:-opensearch-node1}
-  #     - KIBANA_HOST=${KIBANA_HOST:-opensearch-dashboards}
-  #     - ELASTICSEARCH_USERNAME=${opensearch_username}
-  #     - ELASTICSEARCH_PASSWORD=${opensearch_password}
-  #   # disable strict permission checks
-  #   command: ["--strict.perms=false"]
-  #   deploy:
-  #     mode: global
   database:
     image: postgres:13
     restart: unless-stopped
