@@ -15,10 +15,10 @@
 # Default configuration for OpenSearch Dashboards
 
 server.host: "0.0.0.0"
-server.port: 443
+server.port: 9300
 server.name: "LIS-dashboard"
 
-opensearch.hosts: ["https://localhost:9200"]
+opensearch.hosts: ["http://localhost:9200"]
 opensearch.ssl.verificationMode: none
 opensearch.username: "admin"
 opensearch.password: "lis123"
@@ -31,6 +31,6 @@ opensearch_security.readonly_mode.roles: ["kibana_read_only"]
 opensearch_security.cookie.secure: false
 
 
-server.ssl.enabled: true
-server.ssl.key: /usr/share/opensearch-dashboards/config/kibana-key.pem
-server.ssl.certificate: /usr/share/opensearch-dashboards/config/kibana.pem
+server.ssl.enabled: false
+# server.ssl.key: /usr/share/opensearch-dashboards/config/kibana-key.pem
+# server.ssl.certificate: /usr/share/opensearch-dashboards/config/kibana.pem
