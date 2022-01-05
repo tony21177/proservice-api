@@ -19,9 +19,6 @@ subjectAltName = @alt_names
 
 [alt_names]
 DNS.1 = localhost
-DNS.2 = elasticsearch
-DNS.3 = elasticsearch1
-DNS.4 = elasticsearch2
-DNS.5 = elasticsearch3
-DNS.6 = elasticsearch4
+DNS.2 = opensearch-node1
+DNS.3 = opensearch-node2
 IP.1 = 127.0.0.1

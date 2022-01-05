@@ -14,5 +14,6 @@ exit
 
 
 ## 如何驗證有沒有部屬成功
-1. opensearch 
+1. opensearch http://localhost:9200 帳:admin
+2. dashboard http://localhost:9300 帳:admin
 
