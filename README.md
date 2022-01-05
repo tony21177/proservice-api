@@ -17,3 +17,5 @@ exit
 1. opensearch http://localhost:9200 帳:admin
 2. dashboard http://localhost:9300 帳:admin
 
+
+p.s. 若要修改opensearch和dashboard admin的密碼要修改 elk-config/internal_users.yml內的admin hash改為hash過的新密碼
