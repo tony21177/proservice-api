@@ -1,4 +1,4 @@
-const { insertEventLog,insertNotEventLog ,insertFailedEventLog, insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
+const { insertEventLog, insertNotEventLog, insertFailedEventLog, insertRawEventLog, scrollEvents, syncEvents } = require('../datastore/elasticsearch/event')
 const dayjs = require('dayjs')
 const xml2js = require('xml2js');
 const { publishNewestEvent } = require('../mqtt/mqtt')
@@ -6,7 +6,9 @@ const { getAllFcmTokens } = require('../datastore/postgres/user_fcm')
 const { publicLatestEvent, publicLatestEventToDevices } = require('../firebase/fcm')
 const { logger } = require('../logger')
 var utc = require('dayjs/plugin/utc')
-var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
+var timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+const { config: envConfig } = require('../config/env')
+const { config } = require('pg-format');
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault("Asia/Taipei")
@@ -14,11 +16,11 @@ dayjs.tz.setDefault("Asia/Taipei")
 
 exports.saveNotEvent = async (req, res, next) => {
     let eventData = req.body;
-    logger.debug("request body:"+JSON.stringify(eventData))
+    logger.debug("request body:" + JSON.stringify(eventData))
     let todayTW = dayjs();
     let result = ""
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
-    logger.debug("[saveNotEvent] event location:%s",location)
+    logger.debug("[saveNotEvent] event location:%s", location)
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertNotEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
@@ -36,11 +38,12 @@ exports.saveNotEvent = async (req, res, next) => {
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
     logger.debug("docId:", docId);
-    // publishNewestEvent(docId, indexTimestamp);
-    // publicLatestEvent(docId, indexTimestamp);
-    // const tokenArray = await getAllFcmTokens();
-    // publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
-
+    if (config.enableFcmNotify) {
+        publishNewestEvent(docId, indexTimestamp);
+        publicLatestEvent(docId, indexTimestamp);
+        const tokenArray = await getAllFcmTokens();
+        publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
+    }
     res.status(200).json({
         status: 200,
         success: true,
@@ -50,11 +53,11 @@ exports.saveNotEvent = async (req, res, next) => {
 
 exports.saveEvent = async (req, res, next) => {
     let eventData = req.body;
-    logger.debug("request body:"+JSON.stringify(eventData))
+    logger.debug("request body:" + JSON.stringify(eventData))
     let todayTW = dayjs();
     let result = ""
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
-    logger.debug("event location:%s",location)
+    logger.debug("event location:%s", location)
     const indexTimestamp = new Date().getTime();
     try {
         result = await insertEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
@@ -72,10 +75,12 @@ exports.saveEvent = async (req, res, next) => {
     // publish newest event doc id to mqtt
     const docId = result.body['_id']
     logger.debug("docId:", docId);
-    publishNewestEvent(docId, indexTimestamp);
-    publicLatestEvent(docId, indexTimestamp);
-    const tokenArray = await getAllFcmTokens();
-    publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
+    if (envConfig.enableFcmNotify) {
+        publishNewestEvent(docId, indexTimestamp);
+        publicLatestEvent(docId, indexTimestamp);
+        const tokenArray = await getAllFcmTokens();
+        publicLatestEventToDevices(docId, indexTimestamp, tokenArray)
+    }
 
     res.status(200).json({
         status: 200,
@@ -85,14 +90,21 @@ exports.saveEvent = async (req, res, next) => {
 }
 
 exports.saveRawEvent = async (req, res, next) => {
-    const rawBodyBuf = req.rawBody;
+    let result = "fail to parse xml";
+    const indexTimestamp = new Date().getTime();
     let location = req.location === undefined ? "cmuh" : req.location.toLowerCase()
-    let xml;
+    const rawBodyBuf = req.rawBody;
+    
+    let xml = "fail to parse xml";
     try {
-        xml = rawBodyBuf.toString('latin1');
+        if(xml){
+            xml = rawBodyBuf.toString('latin1');
+        }
     } catch (ex) {
         logger.error("toString fail", ex)
-        res.status(500).json({
+        let todayTW = dayjs();
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), xml, indexTimestamp, location);
+        res.status(200).json({
             status: 500,
             success: false,
             data: ex
@@ -106,15 +118,19 @@ exports.saveRawEvent = async (req, res, next) => {
         attrNameProcessors: [function (name) { return '@' + name }]
     }
     //
-    let result;
     try {
         // parse Body
-        result = await xml2js.parseStringPromise(xml.replace("\ufeff", ""), parseOption);
+        if(xml){
+            result = await xml2js.parseStringPromise(xml.replace("\ufeff", ""), parseOption);
+        }else{
+            result = ""
+        }
         result['isRawISO88591'] = true
     } catch (err) {
         logger.error("parse xml error:", err);
-        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), eventData, indexTimestamp, location);
-        res.status(500).json({
+        let todayTW = dayjs();
+        insertFailedEventLog(todayTW.month() + 1, todayTW.date(), result, indexTimestamp, location);
+        res.status(200).json({
             status: 500,
             success: false,
             data: err

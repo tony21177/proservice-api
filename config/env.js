@@ -10,5 +10,6 @@ exports.config = {
     mqttUsername: process.env['mqtt_username'],
     mqttPassword: process.env['mqtt_password'],
     tokenEnv:process.env['TOKEN_ENV'],
-    eventIndex:process.env['EVENT_INDEX']
+    eventIndex:process.env['EVENT_INDEX'],
+    enableFcmNotify:process.env['ENABLE_FCM_NOTIFY']
 }
