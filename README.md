@@ -17,5 +17,18 @@ exit
 1. opensearch http://localhost:9200 帳:admin
 2. dashboard http://localhost:9300 帳:admin
 
+## 更新服務
+1. git pull更新
+2. docker-compose up --build -d
 
-p.s. 若要修改opensearch和dashboard admin的密碼要修改 elk-config/internal_users.yml內的admin hash改為hash過的新密碼
+
+p.s. *若要修改opensearch和dashboard admin的密碼要修改 elk-config/internal_users.yml內的admin hash改為hash過的新密碼*
+## 產生新密碼hash方法
+1. 在project根目錄打開powershell 
+```
+wsl -d docker-desktop
+./opensearch-plugins/opensearch-security/tools/hash.sh
+會提示輸入密碼,輸入後按Enter就會產生hash值 複製起來
+exit
+```
+2. 將第一部產生的hash值改到elk-config/internal_users.yml相對應admin的hash值
