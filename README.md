@@ -22,8 +22,7 @@ exit
 2. docker-compose up --build -d
 
 
-p.s. *若要修改opensearch和dashboard admin的密碼要修改 elk-config/internal_users.yml內的admin hash改為hash過的新密碼*
-## 產生新密碼hash方法
+## 更新opensearch密碼方法
 1. 在project根目錄打開powershell 
 ```
 wsl -d docker-desktop
