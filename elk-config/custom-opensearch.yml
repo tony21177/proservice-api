@@ -8,6 +8,8 @@ plugins.security.ssl.transport.pemcert_filepath: node.pem
 plugins.security.ssl.transport.pemkey_filepath: node-key.pem
 plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
 plugins.security.ssl.transport.enforce_hostname_verification: false
+plugins.security.authcz.admin_dn:
+  - 'CN=admin,OU=RD,O=LIS,L=Taichung,ST=Taiwan,C=TW'
 plugins.security.nodes_dn:
   - 'CN=elasticsearch,OU=RD,O=LIS,L=Taichung,ST=Taiwan,C=TW'
 

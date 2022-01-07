@@ -17,17 +17,21 @@ exit
 1. opensearch http://localhost:9200 帳:admin
 2. dashboard http://localhost:9300 帳:admin
 
-## 更新服務
+## proservice API有更新時
 1. git pull更新
 2. docker-compose up --build -d
 
 
-## 更新opensearch密碼方法
+## 更新opensearch密碼方法 (若不更新預設密碼的話,此步驟可跳過)
 1. 在project根目錄打開powershell 
 ```
-wsl -d docker-desktop
-./opensearch-plugins/opensearch-security/tools/hash.sh
+docker exec -it opensearch-node1 bash -c 'JAVA_HOME=/usr/share/opensearch/jdk bash /usr/share/opensearch/plugins/opensearch-security/tools/hash.sh'
 會提示輸入密碼,輸入後按Enter就會產生hash值 複製起來
 exit
 ```
 2. 將第一部產生的hash值改到elk-config/internal_users.yml相對應admin的hash值
+
+3. 在project根目錄打開powershell 
+```sh
+docker exec -it -e JAVA_HOME=/usr/share/opensearch/jdk opensearch-node1 bash -c '/usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -f /usr/share/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml -t internalusers -icl -nhnv  -cert /usr/share/opensearch/config/admin.pem -cacert /usr/share/opensearch/config/root-ca.pem -key /usr/share/opensearch/config/admin-key.pem'
+```
