@@ -8,12 +8,21 @@ echo 262144 >> /proc/sys/vm/max_map_count
 exit
 ```
 即可關掉powershell
+
+
 ## 相關服務部屬
 1. 進到project根目錄(此目錄下有docker-compose.yml)
 2. 在此目錄下打開powershell執行 docker-compose up --build -d
 3. 在跟目錄下執行
 ```
 npm run migrate
+```
+## 新增一台新儀器時要做的事
+1. 請sam產生一組新的非對稱ssh key
+2. 把公鑰取名為{mac}.pem放至publickey目錄下
+3. 在project根目錄下執行
+```
+docker-compose up --build -d
 ```
 
 ## 如何驗證有沒有部屬成功
