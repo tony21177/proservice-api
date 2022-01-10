@@ -11,7 +11,10 @@ exit
 ## 相關服務部屬
 1. 進到project根目錄(此目錄下有docker-compose.yml)
 2. 在此目錄下打開powershell執行 docker-compose up --build -d
-
+3. 在跟目錄下執行
+```
+npm run migrate
+```
 
 ## 如何驗證有沒有部屬成功
 1. opensearch http://localhost:9200 帳:admin
