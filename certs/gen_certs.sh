@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 BASE=$(pwd)/certs
 CNF_DIR=$BASE/conf.d
