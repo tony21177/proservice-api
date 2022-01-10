@@ -77,8 +77,8 @@ services:
       - ./elk-config/custom-opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
     networks:
       - opensearch-net
-  middleware-api:
-    container_name: middleware-api
+  proservice-api:
+    container_name: proservice-api
     build:
       context: .
       dockerfile: Dockerfile
