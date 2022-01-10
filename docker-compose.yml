@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 services:
   opensearch-node1:
     image: opensearchproject/opensearch:1.0.1
@@ -87,6 +87,22 @@ services:
       - ./elk-config/custom-opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
     networks:
       - opensearch-net
+  database:
+    container_name: database
+    image: postgres:13
+    restart: unless-stopped
+    shm_size: "256mb"
+    ports:
+      - 127.0.0.1:5432:5432 
+    environment:
+      - POSTGRES_DB=$POSTGRES_DBNAME
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - PGDATA=/var/lib/postgresql/data/pgdata/
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    networks:
+      - opensearch-net
   proservice-api:
     container_name: proservice-api
     build:
@@ -120,24 +136,10 @@ services:
     networks:
       - opensearch-net  
     depends_on:
+      - database    
       - opensearch-node1
       - opensearch-node2  
-      - database
-  database:
-    image: postgres:13
-    restart: unless-stopped
-    shm_size: "256mb"
-    ports:
-      - 127.0.0.1:5432:5432 
-    environment:
-      - POSTGRES_DB=$POSTGRES_DBNAME
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - PGDATA=/var/lib/postgresql/data/pgdata/
-    volumes:
-      - database-data:/var/lib/postgresql/data
-    networks:
-      - opensearch-net
+
 
 volumes:
   opensearch-data1:

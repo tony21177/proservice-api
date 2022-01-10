@@ -1,5 +1,5 @@
-
-
+console.log("process.env....")
+console.log(process.env)
 exports.config = {
     esUsername : process.env['opensearch_username'],
     esPassword : process.env['opensearch_password'],
